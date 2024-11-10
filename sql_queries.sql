@@ -2,6 +2,17 @@
 -- SQL Queries For Part 2
 -- ==========================================================================================================
 
+-- ==========================================================================================================
+-- Aliases For The Tables
+-- PUBLISHER p
+-- LIBRARY_BRANCH lb
+-- BORROWER bo
+-- BOOK b
+-- BOOK_LOANS bl
+-- BOOK_COPIES bc
+-- BOOK_AUTHOR ba
+-- ==========================================================================================================
+
 -- Question 1: Insert yourself as a New Borrower. Do not provide the Card_no in your query.
 -- Question 1 Solver: 
 

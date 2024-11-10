@@ -5,6 +5,7 @@
 -- PUBLISHER: Publisher_Name, Phone, Address
 -- PUBLISHER Table Creator: Chime Nguyen
 CREATE TABLE IF NOT EXISTS (
+	-- Attributes
     Publisher_Name VARCHAR(27) NOT NULL, -- The number 27 came from the longest name from the publisher
 	Phone CHAR(12) NOT NULL, -- The number 12 came from the max length of the phone number (excluding extensions)
 	Address VARCHAR(120) NOT NULL, -- This contains the address of the publisher
@@ -30,7 +31,25 @@ CREATE TABLE IF NOT EXISTS (
 
 
 -- BOOK_LOANS: Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date
--- BOOK_LOANS Table Creator: 
+-- BOOK_LOANS Table Creator: Chime Nguyen
+CREATE TABLE IF NOT EXISTS (
+	-- Attributes
+	Book_Id INT NOT NULL,
+	Branch_Id INT NOT NULL,
+	Card_No INT NOT NULL,
+	Date_Out TEXT NOT NULL, -- Dates in TEXT format has to follow the YYYY-MM-DD format for date functions to work
+	Due_Date TEXT NOT NULL,
+	Returned_date TEXT NOT NULL,
+
+	-- Primary Key
+	PRIMARY KEY (Book_Id, Branch_Id, Card_No), -- These three foreign keys make up the primary key
+
+	-- Foreign Key & Foreign Key Constraints
+	-- SQLite Foreign Key Support, 4.1. Composite Foreign Key Constraints mentions how you can combine
+	-- parent and child keys
+	FOREIGN KEY (Book_Id, Branch_Id) REFERENCES BOOK_COPIES (Book_Id, Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (Card_No) REFERENCES BORROWER (Card_No) ON UPDATE CASCADE ON DELETE CASCADE
+)
 
 
 
