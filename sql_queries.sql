@@ -43,8 +43,10 @@ VALUES ('Chime Nguyen', '701 S Nedderman Dr, Texas, TX 76019', '211-211-2112');
 
 
 
--- Question 4-a: Insert a new BOOK with the following info: Title: ‘Harry Potter and the Sorcerer's Stone’ ; 
--- Book_author: ‘J.K. Rowling’ ; Publisher_name: ‘Oxford Publisheing’
+-- Question 4-a: Insert a new BOOK with the following info:
+-- Title: ‘Harry Potter and the Sorcerer's Stone’ ; 
+-- Book_author: ‘J.K. Rowling’ ;
+-- Publisher_name: ‘Oxford Publisheing’
 -- Question 4-a Solver: 
 -- UPDATE 
 -- SET    

@@ -34,12 +34,13 @@ CREATE TABLE IF NOT EXISTS LIBRARY_BRANCH (
 CREATE TABLE IF NOT EXISTS BORROWER (
     -- Attributes
     Card_No INT NOT NULL,
-    Address VARCHAR(120) NOT NULL,
-    PhoneNumber CHAR(12) NOT NULL,
     Name VARCHAR(64) NOT NULL,
+    Address VARCHAR(120) NOT NULL,
+    Phone CHAR(12) NOT NULL,
 
     -- Primary Key & Secondary Keys
-    PRIMARY KEY (Card_No) -- Uniquely defines library borrowers
+    PRIMARY KEY (Card_No), -- Uniquely defines library borrowers
+    UNIQUE (Phone) -- Phone is a unique number that corresponds with the Publisher (Secondary Key)
 );
 
 
@@ -47,13 +48,15 @@ CREATE TABLE IF NOT EXISTS BORROWER (
 -- BOOK Table Creator: Ivan Ko
 CREATE TABLE IF NOT EXISTS BOOK (
     -- Attributes
-    PublisherName VARCHAR(64) NOT NULL,
-    Author VARCHAR(64) NOT NULL,
-    BookID INT NOT NULL,
+    Book_Id INT NOT NULL,
     Title VARCHAR (128) NOT NULL,
+    Publisher_name VARCHAR(64) NOT NULL,
 
     -- Primary Key and Secondary Keys
-    PRIMARY KEY (BookID) -- Uniquely defines Books in the library system
+    PRIMARY KEY (Book_Id) -- Uniquely defines Books in the library system
+
+    -- Foreign Keys & Foreign Key Constraints
+    FOREIGN KEY (Publisher_name) REFERENCES PUBLISHER (Publisher_Name)
 );
 
 
@@ -71,7 +74,7 @@ CREATE TABLE IF NOT EXISTS BOOK_LOANS (
     -- Primary Key & Secondary Keys
     PRIMARY KEY (Book_Id, Branch_Id, Card_No), -- These three foreign keys make up the primary key
 
-    -- Foreign Key & Foreign Key Constraints
+    -- Foreign Keys & Foreign Key Constraints
     -- SQLite Foreign Key Support, 4.1. Composite Foreign Key Constraints mentions how you can combine
     -- parent and child keys
     FOREIGN KEY (Book_Id, Branch_Id) REFERENCES BOOK_COPIES (Book_Id, Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -83,29 +86,32 @@ CREATE TABLE IF NOT EXISTS BOOK_LOANS (
 -- BOOK_COPIES: Book_Id, Branch_Id, No_Of_Copies
 -- BOOK_COPIES Table Creator: Trung Nguyen
 CREATE TABLE IF NOT EXISTS BOOK_COPIES (
-	-- Attributes
-	Book_Id INT NOT NULL,
-	Branch_Id INT NOT NULL,
-	No_Of_Copies INT NOT NULL,
-	
-	-- Primary Key
-	PRIMARY KEY (Book_Id, Branch_Id), -- Combine these to get unique Book-Branch combo
-	-- Foreign Keys
-	FOREIGN KEY (Book_Id) REFERENCES BOOK(Book_Id), -- Match Book_Id from Book
-	FOREIGN KEY (Branch_Id) REFERENCES LIBRARY_BRANCH(Branch_Id) -- Match Branch-Id from Library_Branch
+    -- Attributes
+    Book_Id INT NOT NULL,
+    Branch_Id INT NOT NULL,
+    No_Of_Copies INT NOT NULL,
+    
+    -- Primary Key & Secondary Keys
+    PRIMARY KEY (Book_Id, Branch_Id), -- Combine these to get unique Book-Branch combo
+
+    -- Foreign Keys & Foreign Key Constraints
+    FOREIGN KEY (Book_Id) REFERENCES BOOK (Book_Id) ON UPDATE CASCADE ON DELETE CASCADE, -- Match Book_Id from Book
+    FOREIGN KEY (Branch_Id) REFERENCES LIBRARY_BRANCH (Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE -- Match Branch-Id from Library_Branch
 );
 
 
 -- BOOK_AUTHORS: Book_Id, Author_Name
 -- BOOK_AUTHORS Table Creator: Trung Nguyen
 CREATE TABLE IF NOT EXISTS BOOK_AUTHORS (
-	Book_Id INT NOT NULL,
-	Author_Name VARCHAR(30) -- arbitrary 30 value
+    -- Attributes
+    Book_Id INT NOT NULL,
+    Author_Name VARCHAR(30) -- Arbitrary 30 value
 
-	-- Primary Key
-	PRIMARY KEY (Book_Id, Author_Name), -- Combine these to get unique (non-duplicate) book-authors
-	-- Foreign Keys
-	FOREIGN KEY (Book_Id) REFERENCES BOOK(Book_Id) -- Match Book_Id from Book
+    -- Primary Key & Secondary Keys
+    PRIMARY KEY (Book_Id, Author_Name), -- Combine these to get unique (non-duplicate) book-authors
+
+    -- Foreign Keys & Foreign Key Constraints
+    FOREIGN KEY (Book_Id) REFERENCES BOOK(Book_Id) ON UPDATE CASCADE ON DELETE CASCADE -- Match Book_Id from Book
 );
 
 
