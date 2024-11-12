@@ -77,12 +77,12 @@ VALUES ('Chime Nguyen', '701 S Nedderman Dr, Texas, TX 76019', '211-211-2112');
 
 
 -- Question 6: Return a List borrower names, that have books not returned.
--- Question 6 Solver: 
--- SELECT             
--- FROM               
--- [WHERE]            
--- [GROUP BY [HAVING]]
--- [ORDER BY]         
+-- Question 6 Solver: Chime Nguyen
+-- The DISTINCT keyword ensures that the same borrower does not show up more than once as they may have more
+-- than one book that they haven't returned
+SELECT DISTINCT bo.Name AS Borrower_Names
+FROM BORROWER bo JOIN BOOK_LOANS bl ON bo.Card_No = bl.Card_No
+WHERE Returned_date = NULL;     
 
 
 
@@ -93,27 +93,27 @@ VALUES ('Chime Nguyen', '701 S Nedderman Dr, Texas, TX 76019', '211-211-2112');
 SELECT lb.Branch_Name,
     -- Select the total number of books returned at any time on or before the due date (Version 1)
     (SELECT COUNT(*)
-		FROM BOOK_LOANS
-		WHERE Returned_date <= Due_Date
-	) AS Returned_Books_V1,
+        FROM BOOK_LOANS
+        WHERE Returned_date <= Due_Date
+    ) AS Returned_Books_V1,
 
-	-- Select the total number of books returned at all times (Version 2)
+    -- Select the total number of books returned at all times (Version 2)
     (SELECT COUNT(*)
-		FROM BOOK_LOANS
-		WHERE Returned_date != 'NULL'
-	) AS Returned_Books_V2,
+        FROM BOOK_LOANS
+        WHERE Returned_date != NULL
+    ) AS Returned_Books_V2,
 
-	-- Select the total number of books still borrowed
-	(SELECT COUNT(*)
-		FROM BOOK_LOANS
-		WHERE Returned_date = 'NULL'
-	) AS Still_Borrowed_Books,
+    -- Select the total number of books still borrowed
+    (SELECT COUNT(*)
+        FROM BOOK_LOANS
+        WHERE Returned_date = NULL
+    ) AS Still_Borrowed_Books,
 
-	-- Select the total number of books late
-	(SELECT COUNT(*)
-		FROM BOOK_LOANS
-		WHERE Returned_date > Due_Date
-	) AS Late_Books
+    -- Select the total number of books late
+    (SELECT COUNT(*)
+        FROM BOOK_LOANS
+        WHERE Returned_date > Due_Date
+    ) AS Late_Books
 
 FROM LIBRARY_BRANCH lb JOIN BOOK_LOANS bl ON lb.Branch_Id = bl.Branch_Id
 GROUP BY lb.Branch_Name, Returned_Books, Still_Borrowed_Books, Late_Books;
