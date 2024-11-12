@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS (
 	Phone CHAR(12) NOT NULL, -- The number 12 came from the max length of the phone number (excluding extensions)
 	Address VARCHAR(120) NOT NULL, -- This contains the address of the publisher
 
+	-- Primary Key & Secondary Keys
 	PRIMARY KEY (Publisher_Name), -- Publisher_Name is a primary key that connects PUBLISHER with BOOK
 	UNIQUE (Phone) -- Phone is a unique number that corresponds with the Publisher (Secondary Key)
 );
@@ -39,9 +40,9 @@ CREATE TABLE IF NOT EXISTS (
 	Card_No INT NOT NULL,
 	Date_Out TEXT NOT NULL, -- Dates in TEXT format has to follow the YYYY-MM-DD format for date functions to work
 	Due_Date TEXT NOT NULL,
-	Returned_date TEXT NOT NULL,
+	Returned_date TEXT, -- Returned_date can be NULL for those who haven't turned in their book
 
-	-- Primary Key
+	-- Primary Key & Secondary Keys
 	PRIMARY KEY (Book_Id, Branch_Id, Card_No), -- These three foreign keys make up the primary key
 
 	-- Foreign Key & Foreign Key Constraints
