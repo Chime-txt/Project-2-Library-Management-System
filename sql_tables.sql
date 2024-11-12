@@ -30,13 +30,31 @@ CREATE TABLE IF NOT EXISTS LIBRARY_BRANCH (
 
 
 -- BORROWER: Card_No, Name, Address, Phone
--- BORROWER Table Creator: 
+-- BORROWER Table Creator: Ivan Ko
+CREATE TABLE IF NOT EXISTS BORROWER (
+    -- Attributes
+    Card_No INT NOT NULL,
+    Address VARCHAR(120) NOT NULL,
+    PhoneNumber CHAR(12) NOT NULL,
+    Name VARCHAR(64) NOT NULL,
 
+    -- Primary Key & Secondary Keys
+    PRIMARY KEY (Card_No) -- Uniquely defines library borrowers
+);
 
 
 -- BOOK: Book_Id, Title, Publisher_name
--- BOOK Table Creator: 
+-- BOOK Table Creator: Ivan Ko
+CREATE TABLE IF NOT EXISTS BOOK (
+    -- Attributes
+    PublisherName VARCHAR(64) NOT NULL,
+    Author VARCHAR(64) NOT NULL,
+    BookID INT NOT NULL,
+    Title VARCHAR (128) NOT NULL,
 
+    -- Primary Key and Secondary Keys
+    PRIMARY KEY (BookID) -- Uniquely defines Books in the library system
+);
 
 
 -- BOOK_LOANS: Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date
