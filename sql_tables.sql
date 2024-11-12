@@ -64,7 +64,7 @@ CREATE TABLE BOOK_LOANS IF NOT EXISTS (
 
 -- BOOK_COPIES: Book_Id, Branch_Id, No_Of_Copies
 -- BOOK_COPIES Table Creator: Trung Nguyen
-CREATE TABLE IF NOT EXISTS (
+CREATE TABLE BOOK_COPIES IF NOT EXISTS (
 	-- Attributes
 	Book_Id INT NOT NULL,
 	Branch_Id INT NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS (
 
 -- BOOK_AUTHORS: Book_Id, Author_Name
 -- BOOK_AUTHORS Table Creator: Trung Nguyen
-CREATE TABLE IF NOT EXISTS (
+CREATE TABLE BOOK_AUTHORS IF NOT EXISTS (
 	Book_Id INT NOT NULL,
 	Author_Name VARCHAR(30) -- arbitrary 30 value
 
