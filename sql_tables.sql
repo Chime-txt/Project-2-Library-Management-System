@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS PUBLISHER (
 CREATE TABLE IF NOT EXISTS LIBRARY_BRANCH (
     -- Attributes
     Branch_Id INT NOT NULL,
-    Branch_Name  NOT NULL,
+    Branch_Name VARCHAR(11) NOT NULL,
     Branch_Address VARCHAR(120) NOT NULL,
 
     -- Primary Key & Secondary Keys
@@ -75,9 +75,15 @@ CREATE TABLE IF NOT EXISTS BOOK_LOANS (
     PRIMARY KEY (Book_Id, Branch_Id, Card_No), -- These three foreign keys make up the primary key
 
     -- Foreign Keys & Foreign Key Constraints
+    -- Version 1
     -- SQLite Foreign Key Support, 4.1. Composite Foreign Key Constraints mentions how you can combine
     -- parent and child keys
-    FOREIGN KEY (Book_Id, Branch_Id) REFERENCES BOOK_COPIES (Book_Id, Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE,
+    -- FOREIGN KEY (Book_Id, Branch_Id) REFERENCES BOOK_COPIES (Book_Id, Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE,
+    -- FOREIGN KEY (Card_No) REFERENCES BORROWER (Card_No) ON UPDATE CASCADE ON DELETE CASCADE
+
+    -- Version 2
+    FOREIGN KEY (Book_Id) REFERENCES BOOK (Book_Id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (Branch_Id) REFERENCES LIBRARY_BRANCH (Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (Card_No) REFERENCES BORROWER (Card_No) ON UPDATE CASCADE ON DELETE CASCADE
 )
 
