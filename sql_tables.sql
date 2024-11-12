@@ -4,9 +4,9 @@
 
 -- PUBLISHER: Publisher_Name, Phone, Address
 -- PUBLISHER Table Creator: Chime Nguyen
-CREATE TABLE IF NOT EXISTS (
+CREATE TABLE PUBLISHER IF NOT EXISTS (
     -- Attributes
-    Publisher_Name VARCHAR(27) NOT NULL, -- The number 27 came from the longest name from the publisher
+    Publisher_Name VARCHAR(27) NOT NULL, -- The number 27 came from the longest name from the publisher in the DB
     Phone CHAR(12) NOT NULL, -- The number 12 came from the max length of the phone number (excluding extensions)
     Address VARCHAR(120) NOT NULL, -- This contains the address of the publisher
 
@@ -17,8 +17,16 @@ CREATE TABLE IF NOT EXISTS (
 
 
 -- LIBRARY_BRANCH: Branch_Id, Branch_Name, Branch_Address
--- LIBRARY_BRANCH Table Creator: 
+-- LIBRARY_BRANCH Table Creator: Chime Nguyen
+CREATE TABLE LIBRARY_BRANCH IF NOT EXISTS (
+    -- Attributes
+    Branch_Id INT NOT NULL,
+    Branch_Name  NOT NULL,
+    Branch_Address VARCHAR(120) NOT NULL,
 
+    -- Primary Key & Secondary Keys
+    PRIMARY KEY (Branch_Id) -- Branch_Id is a primary key that connects to BOOK_LOANS and BOOK_COPIES
+);
 
 
 -- BORROWER: Card_No, Name, Address, Phone
@@ -33,7 +41,7 @@ CREATE TABLE IF NOT EXISTS (
 
 -- BOOK_LOANS: Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date
 -- BOOK_LOANS Table Creator: Chime Nguyen
-CREATE TABLE IF NOT EXISTS (
+CREATE TABLE BOOK_LOANS IF NOT EXISTS (
     -- Attributes
     Book_Id INT NOT NULL,
     Branch_Id INT NOT NULL,
