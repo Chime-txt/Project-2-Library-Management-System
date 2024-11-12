@@ -63,11 +63,31 @@ CREATE TABLE BOOK_LOANS IF NOT EXISTS (
 
 
 -- BOOK_COPIES: Book_Id, Branch_Id, No_Of_Copies
--- BOOK_COPIES Table Creator: 
-
+-- BOOK_COPIES Table Creator: Trung Nguyen
+CREATE TABLE IF NOT EXISTS (
+	-- Attributes
+	Book_Id INT NOT NULL,
+	Branch_Id INT NOT NULL,
+	No_Of_Copies INT NOT NULL,
+	
+	-- Primary Key
+	PRIMARY KEY (Book_Id, Branch_Id), -- Combine these to get unique Book-Branch combo
+	-- Foreign Keys
+	FOREIGN KEY (Book_Id) REFERENCES BOOK(Book_Id), -- Match Book_Id from Book
+	FOREIGN KEY (Branch_Id) REFERENCES LIBRARY_BRANCH(Branch_Id) -- Match Branch-Id from Library_Branch
+);
 
 
 -- BOOK_AUTHORS: Book_Id, Author_Name
--- BOOK_AUTHORS Table Creator: 
+-- BOOK_AUTHORS Table Creator: Trung Nguyen
+CREATE TABLE IF NOT EXISTS (
+	Book_Id INT NOT NULL,
+	Author_Name VARCHAR(30) -- arbitrary 30 value
+
+	-- Primary Key
+	PRIMARY KEY (Book_Id, Author_Name), -- Combine these to get unique (non-duplicate) book-authors
+	-- Foreign Keys
+	FOREIGN KEY (Book_Id) REFERENCES BOOK(Book_Id) -- Match Book_Id from Book
+);
 
 
