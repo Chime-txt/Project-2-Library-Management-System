@@ -164,7 +164,7 @@ ORDER BY Date_Out DESC;
 -- addresses.
 -- Question 10 Solver: Ivan Ko
        
- KOoSELECT DISTINCT bo.Name, bo.Address, lb.Branch_Name
+SELECT DISTINCT bo.Name, bo.Address, lb.Branch_Name
 FROM BORROWER bo JOIN BOOK_LOANS bl ON bo.Card_No = bl.Card_No
                  JOIN LIBRARY_BRANCH lb ON bl.Branch_Id = lb.Branch_Id
 WHERE lb.Branch_Name = 'West Branch';
