@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS PUBLISHER (
     Address VARCHAR(120) NOT NULL, -- This contains the address of the publisher
 
     -- Primary Key & Secondary Keys
-    PRIMARY KEY (Publisher_Name), -- Publisher_Name is a primary key that connects PUBLISHER with BOOK
-    UNIQUE (Phone) -- Phone is a unique number that corresponds with the Publisher (Secondary Key)
+    PRIMARY KEY (Publisher_Name) -- Publisher_Name is a primary key that connects PUBLISHER with BOOK
+    -- Phone is NOT a unique number in this case as Publishers can have the same phone number under different names
 );
 
 
@@ -20,12 +20,9 @@ CREATE TABLE IF NOT EXISTS PUBLISHER (
 -- LIBRARY_BRANCH Table Creator: Chime Nguyen
 CREATE TABLE IF NOT EXISTS LIBRARY_BRANCH (
     -- Attributes
-    Branch_Id INT NOT NULL,
+    Branch_Id INTEGER PRIMARY KEY NOT NULL, -- Branch_Id is a primary key that connects to BOOK_LOANS and BOOK_COPIES
     Branch_Name VARCHAR(11) NOT NULL,
-    Branch_Address VARCHAR(120) NOT NULL,
-
-    -- Primary Key & Secondary Keys
-    PRIMARY KEY (Branch_Id) -- Branch_Id is a primary key that connects to BOOK_LOANS and BOOK_COPIES
+    Branch_Address VARCHAR(120) NOT NULL
 );
 
 
@@ -33,13 +30,12 @@ CREATE TABLE IF NOT EXISTS LIBRARY_BRANCH (
 -- BORROWER Table Creator: Ivan Ko
 CREATE TABLE IF NOT EXISTS BORROWER (
     -- Attributes
-    Card_No INT NOT NULL,
+    Card_No INTEGER PRIMARY KEY NOT NULL, -- Uniquely defines library borrowers
     Name VARCHAR(64) NOT NULL,
     Address VARCHAR(120) NOT NULL,
     Phone CHAR(12) NOT NULL,
 
     -- Primary Key & Secondary Keys
-    PRIMARY KEY (Card_No), -- Uniquely defines library borrowers
     UNIQUE (Phone) -- Phone is a unique number that corresponds with the Publisher (Secondary Key)
 );
 
@@ -48,12 +44,9 @@ CREATE TABLE IF NOT EXISTS BORROWER (
 -- BOOK Table Creator: Ivan Ko
 CREATE TABLE IF NOT EXISTS BOOK (
     -- Attributes
-    Book_Id INT NOT NULL,
+    Book_Id INTEGER PRIMARY KEY NOT NULL, -- Uniquely defines Books in the library system
     Title VARCHAR (128) NOT NULL,
     Publisher_name VARCHAR(64) NOT NULL,
-
-    -- Primary Key and Secondary Keys
-    PRIMARY KEY (Book_Id) -- Uniquely defines Books in the library system
 
     -- Foreign Keys & Foreign Key Constraints
     FOREIGN KEY (Publisher_name) REFERENCES PUBLISHER (Publisher_Name)
@@ -64,28 +57,21 @@ CREATE TABLE IF NOT EXISTS BOOK (
 -- BOOK_LOANS Table Creator: Chime Nguyen
 CREATE TABLE IF NOT EXISTS BOOK_LOANS (
     -- Attributes
-    Book_Id INT NOT NULL,
-    Branch_Id INT NOT NULL,
-    Card_No INT NOT NULL,
+    Book_Id INTEGER NOT NULL,
+    Branch_Id INTEGER NOT NULL,
+    Card_No INTEGER NOT NULL,
     Date_Out TEXT NOT NULL, -- Dates in TEXT format has to follow the YYYY-MM-DD format for date functions to work
     Due_Date TEXT NOT NULL,
-    Returned_date TEXT, -- Returned_date can be NULL for those who haven't turned in their book
+    Returned_date TEXT NOT NULL,
 
     -- Primary Key & Secondary Keys
     PRIMARY KEY (Book_Id, Branch_Id, Card_No), -- These three foreign keys make up the primary key
 
     -- Foreign Keys & Foreign Key Constraints
-    -- Version 1
-    -- SQLite Foreign Key Support, 4.1. Composite Foreign Key Constraints mentions how you can combine
-    -- parent and child keys
-    -- FOREIGN KEY (Book_Id, Branch_Id) REFERENCES BOOK_COPIES (Book_Id, Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE,
-    -- FOREIGN KEY (Card_No) REFERENCES BORROWER (Card_No) ON UPDATE CASCADE ON DELETE CASCADE
-
-    -- Version 2
     FOREIGN KEY (Book_Id) REFERENCES BOOK (Book_Id) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (Branch_Id) REFERENCES LIBRARY_BRANCH (Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (Card_No) REFERENCES BORROWER (Card_No) ON UPDATE CASCADE ON DELETE CASCADE
-)
+);
 
 
 
@@ -93,8 +79,8 @@ CREATE TABLE IF NOT EXISTS BOOK_LOANS (
 -- BOOK_COPIES Table Creator: Trung Nguyen
 CREATE TABLE IF NOT EXISTS BOOK_COPIES (
     -- Attributes
-    Book_Id INT NOT NULL,
-    Branch_Id INT NOT NULL,
+    Book_Id INTEGER NOT NULL,
+    Branch_Id INTEGER NOT NULL,
     No_Of_Copies INT NOT NULL,
     
     -- Primary Key & Secondary Keys
@@ -105,13 +91,13 @@ CREATE TABLE IF NOT EXISTS BOOK_COPIES (
     FOREIGN KEY (Branch_Id) REFERENCES LIBRARY_BRANCH (Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE -- Match Branch-Id from Library_Branch
 );
 
-
+--  .import /workspaces/Project-2-Library-Management-System/LMSDataset/Book_Authors.csv BOOK_AUTHORS
 -- BOOK_AUTHORS: Book_Id, Author_Name
 -- BOOK_AUTHORS Table Creator: Trung Nguyen
 CREATE TABLE IF NOT EXISTS BOOK_AUTHORS (
     -- Attributes
-    Book_Id INT NOT NULL,
-    Author_Name VARCHAR(30) -- Arbitrary 30 value
+    Book_Id INTEGER NOT NULL,
+    Author_Name VARCHAR(30), -- Arbitrary 30 value
 
     -- Primary Key & Secondary Keys
     PRIMARY KEY (Book_Id, Author_Name), -- Combine these to get unique (non-duplicate) book-authors

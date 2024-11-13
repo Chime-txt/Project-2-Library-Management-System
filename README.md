@@ -2,4 +2,5 @@
 Current Instructions On Running SQLite3 Functions
 - .headers on
 - .mode table
-- .import \[TABLE\]
+- .separator ,
+- .import \[PATH\] \[TABLE\] --skip 1
