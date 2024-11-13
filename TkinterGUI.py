@@ -66,13 +66,15 @@ add_book_c = conn.cursor()
 
 
 # Add Tables Into DB Via Python
-# add_book_c.execute('''CREATE TABLE ADDRESSES(FIRST_NAME TEXT,
-# 					LAST_NAME TEXT,
-# 					ADDRESS TEXT,
-# 					CITY TEXT,
-# 					STATE TEXT,
-# 					ZIPCODE INT)
-# 	''')
+# add_book_c.execute('''
+#	 CREATE TABLE ADDRESSES(FIRST_NAME TEXT,
+#	 	LAST_NAME TEXT,
+#	 	ADDRESS TEXT,
+#	 	CITY TEXT,
+#	 	STATE TEXT,
+#	 	ZIPCODE INT
+#	 )
+# ''')
 
 
 

@@ -23,7 +23,7 @@
 -- Borrower has Card_No, Name, Address, Phone, we will only be using the latter three attributes.
 -- Since Card_No is a primary key, it will auto increment as necessary
 INSERT INTO BORROWER (Name, Address, Phone)
-VALUES ('Chime Nguyen', '701 S Nedderman Dr, Texas, TX 76019', '211-211-2112');
+VALUES ('Chime Nguyen','701 S Nedderman Dr, Texas, TX 76019', '211-211-2112');
 
 
 
@@ -40,7 +40,10 @@ WHERE Name = 'Chime Nguyen';
 -- Question 3 Solver: Trung Nguyen
 UPDATE BOOK_COPIES
 SET No_Of_Copies = No_Of_Copies + 1   
-WHERE Branch_Id = (SELECT Branch_Id FROM LIBRARY_BRANCH WHERE Branch_Name = 'East Branch');
+WHERE Branch_Id = (SELECT Branch_Id
+                    FROM LIBRARY_BRANCH
+                    WHERE Branch_Name = 'East Branch'
+);
 -- Could hard-code the id value of the 'East Branch" (3) instead of looking for it
 
 
@@ -77,18 +80,14 @@ VALUES ('UTA Branch', '123 Cooper St, Arlington TX 76101');
 -- Question 5 Solver: Trung Nguyen
 -- Notes: JULIANDAY converts it into a date format you can do arithmetic on
 --        Casted it as INTEGER because it'd return as a decimal .0
-SELECT B.Title, 
-    LB.Branch_Name,
-    CASE 
-        WHEN BL.Returned_date IS NOT 'NULL' THEN 
+SELECT B.Title, LB.Branch_Name,
+    CASE WHEN BL.Returned_date IS NOT 'NULL' THEN 
             CAST(JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Date_Out) AS INTEGER)
-        ELSE 
-            CAST(JULIANDAY(CURRENT_DATE) - JULIANDAY(BL.Date_Out) AS INTEGER) 
+        ELSE CAST(JULIANDAY(CURRENT_DATE) - JULIANDAY(BL.Date_Out) AS INTEGER) 
             -- Today's date meaning it was never returned 
     END AS Days_Borrowed
-FROM BOOK_LOANS BL              
-JOIN BOOK B on BL.Book_Id = B.Book_Id
-JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id 
+FROM BOOK_LOANS BL JOIN BOOK B ON BL.Book_Id = B.Book_Id
+    JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id 
 WHERE BL.Date_Out BETWEEN '2022-03-05' AND '2022-03-23'
 ORDER BY B.Title, LB.Branch_Name;
 
@@ -132,27 +131,23 @@ SELECT b.Title, MAX(CASE WHEN bl.Returned_date = 'NULL' THEN NULL
     END) AS Days_borrowed 
 FROM BOOK b JOIN BOOK_LOANS bl ON b.Book_Id = bl.Book_Id
 GROUP BY b.Book_Id
-ORDER BY Days_borrowed DESC; -- This is optional, but is included because
+ORDER BY Days_borrowed DESC; -- Optional, but is included because it is easier to see the maximum number of days
 
 
 -- Question 9: Create a report for Ethan Martinez with all the books they borrowed. List the book title and 
 -- author. Also, calculate the number of days each book was borrowed for and if any book is late being 
 -- returned. Order the results by the date_out.
 -- Question 9 Solver: Ivan Ko & Trung Nguyen
-SELECT bo.Name, 
-b.Title, 
-ba.Author_Name AS Author,
-bl.Date_Out, 
-CASE
-    WHEN bl.Returned_date IS NOT 'NULL' THEN
+SELECT bo.Name, b.Title, ba.Author_Name AS Author, bl.Date_Out, 
+    CASE WHEN bl.Returned_date IS NOT 'NULL' THEN
         CAST(JULIANDAY(bl.Returned_date) - JULIANDAY(bl.Date_Out) AS INTEGER)
-    ELSE 'NULL'
-END AS Days_borrowed,
-CASE
-    WHEN bl.Returned_date IS 'NULL' THEN 'Not Returned'
-    WHEN bl.Returned_date IS NOT 'NULL' AND JULIANDAY(bl.Returned_date) > JULIANDAY(bl.Due_Date) THEN 'Late'
-    ELSE 'On Time'
-END AS Return_Status
+        ELSE 'NULL'
+    END AS Days_borrowed,
+    CASE
+        WHEN bl.Returned_date IS 'NULL' THEN 'Not Returned'
+        WHEN bl.Returned_date IS NOT 'NULL' AND JULIANDAY(bl.Returned_date) > JULIANDAY(bl.Due_Date)
+        THEN 'Late' ELSE 'On Time'
+    END AS Return_Status
 FROM BOOK b JOIN BOOK_LOANS bl ON b.Book_Id = bl.Book_Id
             JOIN BORROWER bo ON bl.Card_No = bo.Card_No
             JOIN BOOK_AUTHORS ba ON b.Book_Id = ba.Book_Id
