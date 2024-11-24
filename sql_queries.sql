@@ -1,13 +1,13 @@
--- ==========================================================================================================
+-- ===========================================================================================================
 -- SQL Queries For Part 2
--- ==========================================================================================================
+-- ===========================================================================================================
 -- SQL Query Templates
 -- SELECT                   -- INSERT INTO              -- UPDATE 
 -- FROM                     -- VALUES                   -- SET    
 -- [WHERE]                                              -- [WHERE]
 -- [GROUP BY [HAVING]]      -- DELETE FROM
 -- [ORDER BY]               -- [WHERE]    
--- ==========================================================================================================
+-- ===========================================================================================================
 -- Aliases For The Tables
 -- PUBLISHER p
 -- LIBRARY_BRANCH lb
@@ -16,7 +16,7 @@
 -- BOOK_LOANS bl
 -- BOOK_COPIES bc
 -- BOOK_AUTHOR ba
--- ==========================================================================================================
+-- ===========================================================================================================
 
 -- Question 1: Insert yourself as a New Borrower. Do not provide the Card_no in your query.
 -- Question 1 Solver: Chime Nguyen
@@ -165,15 +165,17 @@ FROM BORROWER bo JOIN BOOK_LOANS bl ON bo.Card_No = bl.Card_No
 WHERE lb.Branch_Name = 'West Branch';
 
 
--- ==========================================================================================================
+-- ===========================================================================================================
 -- SQL Queries For Part 3
--- ==========================================================================================================
+-- ===========================================================================================================
 
 -- Query 1:
 -- Add an extra column 'Late' to the Book_Loan table. Values will be 0-for non-late retuns, and 1-for late 
--- returns. Then update the 'Late' column with '1' for all records that they have a return date later than the 
+-- returns. Then update the 'Late' column with '1' for all records that they have a return date later than the
 -- due date and with '0' for those were returned on time.
 -- Query 1 Solver: 
+-- This query does not account for books that weren't turned in at all, so we should mark this column as
+-- non-late
 
 
 
