@@ -12,7 +12,7 @@ import sqlite3
 root = Tk()
 root.title('Library Management System')
 root.geometry("600x400")
-root.minsize(600, 100)
+root.minsize(600, 250)
 root.maxsize(600, 800)
 
 
@@ -29,6 +29,8 @@ title = Label(title_frame, text = "Library Management System",
 	  justify = "center", anchor = "center", padx = 224,
 	  pady = 5)
 title.pack(side = "top", anchor = "center")
+
+
 
 
 
@@ -186,23 +188,23 @@ create_tables.execute("""
 
 
 # Define all textbox fields
-# f_name = Entry(root, width = 30)
-# f_name.grid(row = 0, column = 1, padx = 20)
+f_name = Entry(root, width = 30)
+f_name.grid(row = 1, column = 1, padx = 20)
 
-# l_name = Entry(root, width = 30)
-# l_name.grid(row = 1, column =1)
+l_name = Entry(root, width = 30)
+l_name.grid(row = 2, column = 1)
 
-# street = Entry(root, width = 30)
-# street.grid(row = 2, column =1)
+street = Entry(root, width = 30)
+street.grid(row = 3, column = 1)
 
-# city = Entry(root, width = 30)
-# city.grid(row = 3, column =1)
+city = Entry(root, width = 30)
+city.grid(row = 4, column = 1)
 
-# state = Entry(root, width = 30)
-# state.grid(row = 4, column =1)
+state = Entry(root, width = 30)
+state.grid(row = 5, column = 1)
 
-# zcode = Entry(root, width = 30)
-# zcode.grid(row = 5, column =1)
+zcode = Entry(root, width = 30)
+zcode.grid(row = 6, column = 1)
 
 
 
@@ -210,20 +212,20 @@ create_tables.execute("""
 f_name_label = Label(root, text ='First Name: ')
 f_name_label.grid(row = 1, column = 0)
 
-# l_name_label = Label(root, text = 'Last Name: ')
-# l_name_label.grid(row = 2, column = 0)
+l_name_label = Label(root, text = 'Last Name: ')
+l_name_label.grid(row = 2, column = 0)
 
-# street_label = Label(root, text = 'Street: ')
-# street_label.grid(row = 3, column = 0)
+street_label = Label(root, text = 'Street: ')
+street_label.grid(row = 3, column = 0)
 
-# city_label = Label(root, text = 'City: ')
-# city_label.grid(row = 4, column = 0, sticky = "w")
+city_label = Label(root, text = 'City: ')
+city_label.grid(row = 4, column = 0, sticky = "w")
 
-# state_label = Label(root, text = 'State: ')
-# state_label.grid(row = 5, column = 0)
+state_label = Label(root, text = 'State: ')
+state_label.grid(row = 5, column = 0)
 
-# zcode_label = Label(root, text = 'Zipcode: ')
-# zcode_label.grid(row = 6, column = 0)
+zcode_label = Label(root, text = 'Zipcode: ')
+zcode_label.grid(row = 6, column = 0)
 
 
 

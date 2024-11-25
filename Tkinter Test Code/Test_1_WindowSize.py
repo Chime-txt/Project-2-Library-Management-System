@@ -6,7 +6,7 @@ import sqlite3
 root = Tk()
 root.title('Library Management System')
 root.geometry("600x400")
-root.minsize(600, 100)
+root.minsize(600, 250)
 root.maxsize(600, 800)
 
 # Create frame for the Title only
