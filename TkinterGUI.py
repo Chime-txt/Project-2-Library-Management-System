@@ -1,3 +1,53 @@
+import csv
+import os
+
+def import_csv_files():
+    dataset_dir = "LMSDataset"
+    csv_files = [f for f in os.listdir(dataset_dir) if f.endswith('.csv')]
+    
+    for csv_file in csv_files:
+        table_name = os.path.splitext(csv_file)[0].upper()
+        file_path = os.path.join(dataset_dir, csv_file)
+        
+        conn = sqlite3.connect('test.db') # Edit this to be the right database name
+        cursor = conn.cursor()
+        
+        with open(file_path, 'r') as file: # Open file for reading
+            csv_reader = csv.reader(file) 
+            headers = next(csv_reader) # First row is header 
+            
+            # Get the table structure
+			# PRAGMA gets the list of tuples and information and store into the cursor
+            cursor.execute(f"PRAGMA table_info({table_name})")
+			# PRAGMA returns: cid, name, type, notnull, dflt_value, pk
+			# fetchall gets the rows returned by PRAGMA above
+			# get the column name from the second element (name) of the tuple
+            table_columns = [column[1] for column in cursor.fetchall()]
+            
+            # Prepare the INSERT statement
+            columns = ', '.join(table_columns)
+			# Placeholders to make sure you have the correct number of columns
+			# The number of placeholders should match the number of columns
+			# Should look like this (?, ?, ?, ...)
+            placeholders = ', '.join(['?' for _ in table_columns])
+			# This is just sqlite3 syntax for inserting data into a table
+            insert_query = f"INSERT OR REPLACE INTO {table_name} ({columns}) VALUES ({placeholders})"
+            
+            # Insert data
+            for row in csv_reader:
+                # Make sure the row has the correct number of elements
+                if len(row) != len(table_columns):
+                    print(f"Skipping row in {csv_file}: {row}")
+                    continue
+                
+                cursor.execute(insert_query, row)
+        
+        conn.commit()
+        conn.close()
+    
+    print("CSV files imported successfully")
+
+
 # Install GUI For Python
 # -- PyQt5 : pip3 install PyQt5
 # -- Tkinter: pip3 install tkinter
@@ -293,7 +343,7 @@ def part2_query1(query_runner):
 # General Do Query Creator: Chime Nguyen
 def do_query():
 	# Create a new connection dedicated to the queries
-	query_conn = sqlite3.connect('library_management_system.db')
+	query_conn = sqlite3.connect('test.db') # Edit this to be the right database name
 
 	# Use this cursor to run the query
 	query_runner = query_conn.cursor()
@@ -415,7 +465,7 @@ def do_query():
 def create_library_tables():
 	# Using our knowledge from Programming Languages, we could check if the database exists, but we may not need to here
 	# Connect to or create a Library Management System Database and create the tables, if they are not created
-	conn = sqlite3.connect('library_management_system.db')
+	conn = sqlite3.connect('test.db') # Edit this to be the right database name
 
 	# Create a cursor to create the tables
 	create_tables = conn.cursor()
@@ -537,6 +587,8 @@ def create_library_tables():
 create_library_tables()
 # END ===================================== Table Creation ===================================== END
 
+# Import CSV files
+import_csv_files()
 
 # BEGIN ==================================== Query Button ==================================== BEGIN
 # This button will run a function called do_query and check against all of the queries before doing
