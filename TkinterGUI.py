@@ -70,6 +70,9 @@ def select_from_dropdown(event):
 		if int(widget.grid_info()["row"]) > 1:
 			widget.grid_forget()
 
+	# Clear query results
+	placeholder_label.config(text = "")
+
 	if clicked.get() == "Part 2 - Query 1":
 		# Query 1 - Add New Borrower
 		query1_label = Label(textfield_frame, text = "Insert New Borrower Into Database")
@@ -123,15 +126,78 @@ def select_from_dropdown(event):
 # BEGIN ============================== Complete Queries Command ============================== BEGIN
 def do_query():
 	# Create a frame for the results based on query
-	placeholder_label = Label(results_frame)
 	if clicked.get() == "Part 2 - Query 1":
-		placeholder_label.config(text = "Results For Query 1")
-		placeholder_label.grid(row = 3, column = 0, columnspan = 2)
+		# Do computations for Part 2 - Query 1
+		placeholder_label.config(text = "Results For Part 2 - Query 1")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
 	elif clicked.get() == "Part 2 - Query 2":
-		placeholder_label.config(text = "Results For Query 2")
-		placeholder_label.grid(row = 3, column = 0, columnspan = 2)
+		# Do computations for Part 2 - Query 2
+		placeholder_label.config(text = "Results For Part 2 - Query 2")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 3":
+		# Do computations for Part 2 - Query 3
+		placeholder_label.config(text = "Results For Part 2 - Query 3")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 4a":
+		# Do computations for Part 2 - Query 4a
+		placeholder_label.config(text = "Results For Part 2 - Query 4a")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 4b":
+		# Do computations for Part 2 - Query 4b
+		placeholder_label.config(text = "Results For Part 2 - Query 4b")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 5":
+		# Do computations for Part 2 - Query 5
+		placeholder_label.config(text = "Results For Part 2 - Query 5")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 6":
+		# Do computations for Part 2 - Query 6
+		placeholder_label.config(text = "Results For Part 2 - Query 6")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 7":
+		# Do computations for Part 2 - Query 7
+		placeholder_label.config(text = "Results For Part 2 - Query 7")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 8":
+		# Do computations for Part 2 - Query 8
+		placeholder_label.config(text = "Results ForPart 2 -  Query 8")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 9":
+		# Do computations for Part 2 - Query 9
+		placeholder_label.config(text = "Results For Part 2 - Query 9")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 2 - Query 10":
+		# Do computations for Part 2 - Query 10
+		placeholder_label.config(text = "Results For Part 2 - Query 10")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 3 - Query 1":
+		# Do computations for Part 3 - Query 1
+		placeholder_label.config(text = "Results For Part 3 - Query 1")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 3 - Query 2":
+		# Do computations for Part 3 - Query 2
+		placeholder_label.config(text = "Results For Part 3 - Query 2")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	elif clicked.get() == "Part 3 - Query 3":
+		# Do computations for Part 3 - Query 3
+		placeholder_label.config(text = "Results For Part 3 - Query 3")
+		placeholder_label.grid(row = 100, column = 0, columnspan = 2)
+		return
 	else:
-		placeholder_label.grid_forget()
+		placeholder_label.config(text = "")
 
 
 # END ================================ Complete Queries Command ================================ END
@@ -355,6 +421,10 @@ create_tables.execute("""
 # part_2_query_10.grid(row = , column = , columnspan = , pady = , padx = , ipadx = )
 
 # Project 2 Part 3 Queries
+
+# Query Results Label
+placeholder_label = Label(results_frame)
+
 
 query_button = Button(root, text = "Complete Query", command = do_query)
 query_button.pack()
