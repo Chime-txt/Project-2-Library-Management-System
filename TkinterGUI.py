@@ -22,10 +22,10 @@ import sqlite3
 
 
 # BEGIN ================================== Rows Information ================================== BEGIN
-# Row 0 = Title (Reserved)
+# Row 0 = Unused
 # Row 1 = Dropdown Menu (Reserved)
 # Row 2 = Query Select Label (Reserved)
-# Row 3 = Currently Empty, Could Be Used To Describe Inputs (Cleared Upon Selecting New Query)
+# Row 3 = Unused, Could Be Used To Describe Inputs (Cleared Upon Selecting New Query)
 # Rows 4 Onwards = Query Text Fields, Labels, And Results (Cleared Upon Selecting New Query)
 # END ==================================== Rows Information ==================================== END
 
@@ -40,9 +40,6 @@ root.maxsize(600, 800)
 
 
 # BEGIN ======================================  Frames  ====================================== BEGIN
-# Create a frame for the title
-title_frame = LabelFrame(root, borderwidth = 0, pady = 5)
-
 # Create a frame for the dropdown menu
 dropdown_frame = LabelFrame(root, borderwidth = 5, pady = 0)
 
@@ -85,6 +82,7 @@ query_options = [
 
 # BEGIN ================================== Dropdown Command ================================== BEGIN
 # Command for selected dropdown menu, where event checks for changes in dropdown
+# General Dropdown Selection Creator: Chime Nguyen
 def select_from_dropdown(event):
 	# Remove previous query details
 	for widget in textfield_frame.grid_slaves():
@@ -232,86 +230,6 @@ def select_from_dropdown(event):
 	else:
 		query_select_label.config(text = "Select the query using the dropdown above.")
 		return
-# END ==================================== Dropdown Command ==================================== END
-
-
-# BEGIN ============================== Complete Queries Command ============================== BEGIN
-def do_query():
-	# Create a frame for the results based on query
-	if clicked.get() == query_options[2]:
-		# Do computations for Part 2 - Query 1
-		results_label.config(text = "Results For Part 2 - Query 1")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[3]:
-		# Do computations for Part 2 - Query 2
-		results_label.config(text = "Results For Part 2 - Query 2")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[4]:
-		# Do computations for Part 2 - Query 3
-		results_label.config(text = "Results For Part 2 - Query 3")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[5]:
-		# Do computations for Part 2 - Query 4a
-		results_label.config(text = "Results For Part 2 - Query 4a")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[6]:
-		# Do computations for Part 2 - Query 4b
-		results_label.config(text = "Results For Part 2 - Query 4b")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[7]:
-		# Do computations for Part 2 - Query 5
-		results_label.config(text = "Results For Part 2 - Query 5")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[8]:
-		# Do computations for Part 2 - Query 6
-		results_label.config(text = "Results For Part 2 - Query 6")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[9]:
-		# Do computations for Part 2 - Query 7
-		results_label.config(text = "Results For Part 2 - Query 7")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[10]:
-		# Do computations for Part 2 - Query 8
-		results_label.config(text = "Results ForPart 2 -  Query 8")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[11]:
-		# Do computations for Part 2 - Query 9
-		results_label.config(text = "Results For Part 2 - Query 9")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[12]:
-		# Do computations for Part 2 - Query 10
-		results_label.config(text = "Results For Part 2 - Query 10")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[15]:
-		# Do computations for Part 3 - Query 1
-		results_label.config(text = "Results For Part 3 - Query 1")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[16]:
-		# Do computations for Part 3 - Query 2
-		results_label.config(text = "Results For Part 3 - Query 2")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	elif clicked.get() == query_options[17]:
-		# Do computations for Part 3 - Query 3
-		results_label.config(text = "Results For Part 3 - Query 3")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
-	else:
-		results_label.config(text = "")
-		return
-# END ================================ Complete Queries Command ================================ END
 
 # Set the dropdown query to the first option in the dropdown
 clicked = StringVar()
@@ -320,6 +238,135 @@ clicked.set(query_options[0])
 # Create a dropdown menu that will change the query view based on what query you are currently on
 dropdown = OptionMenu(dropdown_frame, clicked, *query_options, command = select_from_dropdown)
 dropdown.grid(row = 1)
+# END ==================================== Dropdown Command ==================================== END
+
+
+# BEGIN ================================== Query  Functions ================================== BEGIN
+def part2_query1(query_runner):
+	# Variable for the phone max length
+	phone_length = 12
+
+	# Verify that any of the data being inserted into is not empty or invalid
+	verified = True
+	invalid_message = "The following information is missing/invalid: "
+
+	verify_entry = bo_name_entry.get()
+	if not verify_entry:
+		verified = False
+		invalid_message += "Borrower's Name. "
+	verify_entry = bo_address_entry.get()
+	if not verify_entry:
+		verified = False
+		invalid_message += "Borrower's Address. "
+	verify_entry = bo_phone_entry.get()
+	if not verify_entry:
+		verified = False
+		invalid_message += "Borrower's Phone."
+	if len(verify_entry) > phone_length:
+		verified = False
+		invalid_message += "Borrower's Phone Is Too Long."
+
+	# Return if the inputs are not valid
+	if not verified:
+		return invalid_message
+
+	# Insert the filled in data into the database after verifying that the data is valid
+	query_runner.execute("INSERT INTO BORROWER (Name, Address, Phone) VALUES (:name, :address, :phone)",
+					  {
+						  'name': bo_name_entry.get(),
+						  'address': bo_address_entry.get(),
+						  'phone': bo_phone_entry.get()
+					  })
+	
+	# Clear all entries that were used
+	bo_name_entry.delete(0, END)
+	bo_address_entry.delete(0, END)
+	bo_phone_entry.delete(0, END)
+
+	# Return a message that the query was successfully inserted into the table.
+	return "Successfully Inserted New Borrower"
+	
+# END ==================================== Query  Functions ==================================== END
+
+
+# BEGIN ============================== Complete Queries Command ============================== BEGIN
+# General Do Query Creator: Chime Nguyen
+def do_query():
+	# Create a new connection dedicated to the queries
+	query_conn = sqlite3.connect('library_management_system.db')
+
+	# Use this cursor to run the query
+	query_runner = query_conn.cursor()
+
+	# Create a frame for the results based on query
+	if clicked.get() == query_options[2]:
+		# Do computations for Part 2 - Query 1
+		results_text = part2_query1(query_runner)
+		results_label.config(text = results_text)
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[3]:
+		# Do computations for Part 2 - Query 2
+		results_label.config(text = "Results For Part 2 - Query 2")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[4]:
+		# Do computations for Part 2 - Query 3
+		results_label.config(text = "Results For Part 2 - Query 3")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[5]:
+		# Do computations for Part 2 - Query 4a
+		results_label.config(text = "Results For Part 2 - Query 4a")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[6]:
+		# Do computations for Part 2 - Query 4b
+		results_label.config(text = "Results For Part 2 - Query 4b")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[7]:
+		# Do computations for Part 2 - Query 5
+		results_label.config(text = "Results For Part 2 - Query 5")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[8]:
+		# Do computations for Part 2 - Query 6
+		results_label.config(text = "Results For Part 2 - Query 6")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[9]:
+		# Do computations for Part 2 - Query 7
+		results_label.config(text = "Results For Part 2 - Query 7")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[10]:
+		# Do computations for Part 2 - Query 8
+		results_label.config(text = "Results ForPart 2 -  Query 8")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[11]:
+		# Do computations for Part 2 - Query 9
+		results_label.config(text = "Results For Part 2 - Query 9")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[12]:
+		# Do computations for Part 2 - Query 10
+		results_label.config(text = "Results For Part 2 - Query 10")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[15]:
+		# Do computations for Part 3 - Query 1
+		results_label.config(text = "Results For Part 3 - Query 1")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[16]:
+		# Do computations for Part 3 - Query 2
+		results_label.config(text = "Results For Part 3 - Query 2")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	elif clicked.get() == query_options[17]:
+		# Do computations for Part 3 - Query 3
+		results_label.config(text = "Results For Part 3 - Query 3")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+	else:
+		results_label.config(text = "")
+
+	# Commit any changes to the database
+	query_conn.commit()
+
+	# Close the connection for the query
+	query_conn.close()
+# END ================================ Complete Queries Command ================================ END
+
+
 
 
 # Add Information To The Database
@@ -363,18 +410,16 @@ dropdown.grid(row = 1)
 #     	iq_label.grid(row = 9, column = 0, columnspan = 2)
 
 
-# BEGIN ================================== Connect Database ================================== BEGIN
-# Using our knowledge from Programming Languages, we could check if the database exists, but we may not need to here
-# Connect to or create a Library Management System Database and create the tables, if they are not created
-conn = sqlite3.connect('library_management_system.db')
-
-# Create a cursor
-create_tables = conn.cursor()
-# END ==================================== Connect Database ==================================== END
-
 
 # BEGIN =================================== Table Creation =================================== BEGIN
 def create_library_tables():
+	# Using our knowledge from Programming Languages, we could check if the database exists, but we may not need to here
+	# Connect to or create a Library Management System Database and create the tables, if they are not created
+	conn = sqlite3.connect('library_management_system.db')
+
+	# Create a cursor to create the tables
+	create_tables = conn.cursor()
+
 	# Creates a PUBLISHER table if it does not exists
 	create_tables.execute("""
 		CREATE TABLE IF NOT EXISTS PUBLISHER (
@@ -387,6 +432,7 @@ def create_library_tables():
 			PRIMARY KEY (Publisher_Name)
 		)
 	""")
+	print ('Created PUBLISHER table successfully')
 
 	# Creates a LIBRARY_BRANCH table if it does not exists
 	create_tables.execute("""
@@ -397,6 +443,7 @@ def create_library_tables():
 			Branch_Address VARCHAR(120) NOT NULL
 		)
 	""")
+	print ('Created LIBRARY_BRANCH table successfully')
 
 	# Creates a BORROWER table if it does not exists
 	create_tables.execute("""
@@ -411,6 +458,7 @@ def create_library_tables():
 			UNIQUE (Phone)
 		)
 	""")
+	print ('Created BORROWER table successfully')
 
 	# Creates a BOOK table if it does not exists
 	create_tables.execute("""
@@ -424,6 +472,7 @@ def create_library_tables():
 			FOREIGN KEY (Publisher_name) REFERENCES PUBLISHER (Publisher_Name)
 		)
 	""")
+	print ('Created BOOK table successfully')
 
 	# Creates a BOOK_LOANS table if it does not exists
 	create_tables.execute("""
@@ -444,6 +493,7 @@ def create_library_tables():
 			FOREIGN KEY (Card_No) REFERENCES BORROWER (Card_No) ON UPDATE CASCADE ON DELETE CASCADE
 		)
 	""")
+	print ('Created BOOK_LOANS table successfully')
 
 	# Creates a BOOK_COPIES table if it does not exists
 	create_tables.execute("""
@@ -460,6 +510,7 @@ def create_library_tables():
 			FOREIGN KEY (Branch_Id) REFERENCES LIBRARY_BRANCH (Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE -- Match Branch-Id from Library_Branch
 		)
 	""")
+	print ('Created BOOK_COPIES table successfully')
 
 	# Creates a BOOK_AUTHORS table if it does not exists
 	create_tables.execute("""
@@ -474,6 +525,13 @@ def create_library_tables():
 			FOREIGN KEY (Book_Id) REFERENCES BOOK(Book_Id) ON UPDATE CASCADE ON DELETE CASCADE
 		)
 	""")
+	print ('Created BOOK_AUTHORS table successfully')
+
+	# Commit changes
+	conn.commit()
+
+	# Quit
+	conn.close()
 
 # Creates all of the tables in the library database
 create_library_tables()
@@ -493,11 +551,10 @@ query_button = Button(root, text = "Complete Query", command = do_query)
 
 # BEGIN ================================== Attribute Labels ================================== BEGIN
 # Place title of database system at the top using the frame
-title_label = Label(title_frame, text = "Library Management System",
+title = Label(root, text = "Library Management System",
 	  background = "blue", foreground = "white",
-	  justify = "center", anchor = "center", padx = 224,
+	  justify = "center", anchor = "center", padx = 500,
 	  pady = 5)
-title_label.grid(row = 0, columnspan = 10)
 
 # The query select label displays the current query or a message asking the user to select a query
 # Start by showing a message to tell the user to select a query
@@ -507,56 +564,58 @@ query_select_label.grid(row = 2, column = 0, columnspan = 2)
 
 # The results label will display the results of the query in the results frame
 results_label = Label(results_frame)
+# The results label position on the grid will be dealt with by the do query function as it will
+# be automatically cleared when switching to a different query question
 
 # Place footer of database system at the bottom using the root
 footer = Label(root, text = "Created By Group 2 - Chime Nguyen, Ivan Ko, Trung Nguyen",
 	  background = "blue", foreground = "white",
-	  justify = "center", anchor = "center", padx = 224,
+	  justify = "center", anchor = "center", padx = 500,
 	  pady = 5)
 
 # These are all of the labels for the attributes from the PUBLISHER table
 # Not all attributes may be used here
-p_publisher_name_label = Entry(textfield_frame, width = 30)
-p_phone_label = Entry(textfield_frame, width = 30)
-p_address_label = Entry(textfield_frame, width = 30)
+p_publisher_name_label = Entry(textfield_frame, text = "Publisher's Name", width = 30)
+p_phone_label = Entry(textfield_frame, text = "Publisher's Phone", width = 30)
+p_address_label = Entry(textfield_frame, text = "Publisher's Address", width = 30)
 
 # These are all of the labels for the attributes from the LIBRARY_BRANCH table
 # Not all attributes may be used here
-lb_branch_id_label = Entry(textfield_frame, width = 30)
-lb_branch_name_label = Entry(textfield_frame, width = 30)
-lb_branch_address_label = Entry(textfield_frame, width = 30)
+lb_branch_id_label = Entry(textfield_frame, text = "Library Branch ID", width = 30)
+lb_branch_name_label = Entry(textfield_frame, text = "Library Branch's Name", width = 30)
+lb_branch_address_label = Entry(textfield_frame, text = "Library Branch's Address", width = 30)
 
 # These are all of the labels for the attributes from the BORROWER table
 # Not all attributes may be used here
-bo_name_label = Label(textfield_frame, text = "Borrower's Name")
-bo_address_label = Label(textfield_frame, text = "Borrower's Address")
-bo_phone_label = Label(textfield_frame, text = "Borrower's Phone")
+bo_name_label = Label(textfield_frame, text = "Borrower's Name", width = 30)
+bo_address_label = Label(textfield_frame, text = "Borrower's Address", width = 30)
+bo_phone_label = Label(textfield_frame, text = "Borrower's Phone", width = 30)
 
 # These are all of the labels for the attributes from the BOOK table
 # Not all attributes may be used here
-b_book_id_label = Entry(textfield_frame, width = 30)
-b_title_label = Entry(textfield_frame, width = 30)
-b_publisher_name_label = Entry(textfield_frame, width = 30)
+b_book_id_label = Entry(textfield_frame, text = "Book ID", width = 30)
+b_title_label = Entry(textfield_frame, text = "Book Title", width = 30)
+b_publisher_name_label = Entry(textfield_frame, text = "Book Publisher's Name", width = 30)
 
 # These are all of the labels for the attributes from the BOOK_LOANS table
 # Not all attributes may be used here
-bl_book_id_label = Entry(textfield_frame, width = 30)
-bl_branch_id_label = Entry(textfield_frame, width = 30)
-bl_card_no_label = Entry(textfield_frame, width = 30)
-bl_date_out_label = Entry(textfield_frame, width = 30)
-bl_due_date_label = Entry(textfield_frame, width = 30)
-bl_returned_date_label = Entry(textfield_frame, width = 30)
+bl_book_id_label = Entry(textfield_frame, text = "Book ID", width = 30)
+bl_branch_id_label = Entry(textfield_frame, text = "Library Branch ID", width = 30)
+bl_card_no_label = Entry(textfield_frame, text = "Borrower Card No", width = 30)
+bl_date_out_label = Entry(textfield_frame, text = "Date Out", width = 30)
+bl_due_date_label = Entry(textfield_frame, text = "Due Date", width = 30)
+bl_returned_date_label = Entry(textfield_frame, text = "Return Date", width = 30)
 
 # These are all of the labels for the attributes from the BOOK_COPIES table
 # Not all attributes may be used here
-bc_book_id_label = Entry(textfield_frame, width = 30)
-bc_branch_id_label = Entry(textfield_frame, width = 30)
-bc_no_of_copies_label = Entry(textfield_frame, width = 30)
+bc_book_id_label = Entry(textfield_frame, text = "Book ID", width = 30)
+bc_branch_id_label = Entry(textfield_frame, text = "Library Branch ID", width = 30)
+bc_no_of_copies_label = Entry(textfield_frame, text = "Number Of Copies", width = 30)
 
 # These are all of the labels for the attributes from the BOOK_AUTHORS table
 # Not all attributes may be used here
-ba_book_id_label = Entry(textfield_frame, width = 30)
-ba_author_name_label = Entry(textfield_frame, width = 30)
+ba_book_id_label = Entry(textfield_frame, text = "Book ID", width = 30)
+ba_author_name_label = Entry(textfield_frame, text = "Author's Name", width = 30)
 
 # END ==================================== Attribute Labels ==================================== END
 
@@ -609,17 +668,15 @@ ba_author_name_entry = Entry(textfield_frame, width = 30)
 
 
 # BEGIN =================================== Packing  Order =================================== BEGIN
-title_frame.pack(side = "top", anchor = "center")
+# Pack the title at the top of the window
+title.pack(side = "top", anchor = "center")
 dropdown_frame.pack()
 textfield_frame.pack(padx = 2)
 query_button.pack()
 results_frame.pack(padx = 2)
+# Pack the footer at the bottom of the window
 footer.pack(side = "bottom", anchor = "center")
 # END ===================================== Packing  Order ===================================== END
-
-# Commit changes
-
-# Quit
 
 # Run Main Loop
 root.mainloop()
