@@ -177,14 +177,34 @@ WHERE lb.Branch_Name = 'West Branch';
 -- This query does not account for books that weren't turned in at all, so we should mark this column as
 -- non-late
 
+ALTER TABLE BOOK_LOANS ADD COLUMN Late INTEGER;
+
+UPDATE BOOK_LOANS
+SET Late = (
+    CASE
+        WHEN CAST(JULIANDAY(Returned_date) > JULIANDAY(Due_Date) AS INTEGER) THEN 1
+        WHEN CAST(JULIANDAY(Returned_date) <= JULIANDAY(Due_Date) AS INTEGER) THEN 0
+        ELSE 0
+    END
+    );
 
 
 -- Query 2:
 -- Add an extra column 'LateFee' to the Library_Branch table, decide late fee per day for each branch and 
 -- update that column.
--- Query 2 Solver: 
+-- Query 2 Solver: Ivan Ko
 
+ALTER TABLE LIBRARY_BRANCH ADD COLUMN LateFee FLOAT DEFAULT 0.00;
 
+UPDATE LIBRARY_BRANCH
+SET LateFee = (
+    CASE
+        WHEN Branch_Name = 'Main Branch' THEN 100.00
+        WHEN Branch_Name = 'West Branch' THEN 50.00
+        WHEN Branch_Name = 'East Branch' THEN 10.00
+        ELSE 420.69
+    END
+    );
 
 -- Query 3:
 -- Create a view vBookLoanInfo that retrieves all information per book loan. The view should have the 
@@ -199,6 +219,27 @@ WHERE lb.Branch_Name = 'West Branch';
 --    • Number of days returned late – if returned before or on due_date place zero 
 --    • Branch ID 
 --    • Total Late Fee Balance 'LateFeeBalance' – If the book was not retuned late than fee = '0'
--- Query 3 Solver: 
+-- Query 3 Solver: Trung Nguyen
+-- Trung is attemping this one 
 
-
+CREATE VIEW vBookLoanInfo AS
+SELECT 
+    BL.Card_No,
+    BR.Name AS 'Borrower Name',
+    BL.Date_Out,
+    BL.Due_Date,
+    BL.Returned_date,
+    CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Date_Out)) AS INTEGER) AS TotalDays,
+    B.Title AS 'Book Title',
+    CASE WHEN BL.Late = 1 
+        THEN CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER)
+        ELSE 0 --Assumption that it's 0 days late rather than just NULL
+    END AS 'Days Returned Late',
+    BL.Branch_Id,
+    CASE WHEN BL.Late = 1
+        THEN CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER) * LB.LateFee
+    END AS LateFeeBalance
+From BOOK_LOANS BL
+JOIN BORROWER BR ON BL.Card_No = BR.Card_No
+JOIN BOOK B ON BL.BOOK_Id = B.Book_Id
+JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id;

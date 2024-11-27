@@ -2,6 +2,7 @@
 -- SQL Tables For Part 2
 -- ==========================================================================================================
 
+-- .import /workspaces/Project-2-Library-Management-System/LMSDataset/Publisher.csv PUBLISHER --skip 1
 -- PUBLISHER: Publisher_Name, Phone, Address
 -- PUBLISHER Table Creator: Chime Nguyen
 CREATE TABLE IF NOT EXISTS PUBLISHER (
@@ -16,6 +17,7 @@ CREATE TABLE IF NOT EXISTS PUBLISHER (
 );
 
 
+-- .import /workspaces/Project-2-Library-Management-System/LMSDataset/Library_Branch.csv LIBRARY_BRANCH --skip 1
 -- LIBRARY_BRANCH: Branch_Id, Branch_Name, Branch_Address
 -- LIBRARY_BRANCH Table Creator: Chime Nguyen
 CREATE TABLE IF NOT EXISTS LIBRARY_BRANCH (
@@ -26,6 +28,7 @@ CREATE TABLE IF NOT EXISTS LIBRARY_BRANCH (
 );
 
 
+-- .import /workspaces/Project-2-Library-Management-System/LMSDataset/Borrower.csv BORROWER --skip 1
 -- BORROWER: Card_No, Name, Address, Phone
 -- BORROWER Table Creator: Ivan Ko
 CREATE TABLE IF NOT EXISTS BORROWER (
@@ -40,6 +43,7 @@ CREATE TABLE IF NOT EXISTS BORROWER (
 );
 
 
+-- .import /workspaces/Project-2-Library-Management-System/LMSDataset/Book.csv BOOK --skip 1
 -- BOOK: Book_Id, Title, Publisher_name
 -- BOOK Table Creator: Ivan Ko
 CREATE TABLE IF NOT EXISTS BOOK (
@@ -53,6 +57,7 @@ CREATE TABLE IF NOT EXISTS BOOK (
 );
 
 
+-- .import /workspaces/Project-2-Library-Management-System/LMSDataset/Book_Loans.csv BOOK_LOANS --skip 1
 -- BOOK_LOANS: Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date
 -- BOOK_LOANS Table Creator: Chime Nguyen
 CREATE TABLE IF NOT EXISTS BOOK_LOANS (
@@ -74,7 +79,7 @@ CREATE TABLE IF NOT EXISTS BOOK_LOANS (
 );
 
 
-
+-- .import /workspaces/Project-2-Library-Management-System/LMSDataset/Book_Copies.csv BOOK_COPIES --skip 1
 -- BOOK_COPIES: Book_Id, Branch_Id, No_Of_Copies
 -- BOOK_COPIES Table Creator: Trung Nguyen
 CREATE TABLE IF NOT EXISTS BOOK_COPIES (
@@ -91,7 +96,7 @@ CREATE TABLE IF NOT EXISTS BOOK_COPIES (
     FOREIGN KEY (Branch_Id) REFERENCES LIBRARY_BRANCH (Branch_Id) ON UPDATE CASCADE ON DELETE CASCADE -- Match Branch-Id from Library_Branch
 );
 
---  .import /workspaces/Project-2-Library-Management-System/LMSDataset/Book_Authors.csv BOOK_AUTHORS
+--  .import /workspaces/Project-2-Library-Management-System/LMSDataset/Book_Authors.csv BOOK_AUTHORS --skip 1
 -- BOOK_AUTHORS: Book_Id, Author_Name
 -- BOOK_AUTHORS Table Creator: Trung Nguyen
 CREATE TABLE IF NOT EXISTS BOOK_AUTHORS (
