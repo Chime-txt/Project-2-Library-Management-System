@@ -173,7 +173,7 @@ WHERE lb.Branch_Name = 'West Branch';
 -- Add an extra column 'Late' to the Book_Loan table. Values will be 0-for non-late retuns, and 1-for late 
 -- returns. Then update the 'Late' column with '1' for all records that they have a return date later than the
 -- due date and with '0' for those were returned on time.
--- Query 1 Solver: 
+-- Query 1 Solver: Ivan Ko
 -- This query does not account for books that weren't turned in at all, so we should mark this column as
 -- non-late
 
