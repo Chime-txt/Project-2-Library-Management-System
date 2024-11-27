@@ -17,19 +17,19 @@ root.geometry("600x400")
 root.minsize(600, 250) # Set the minumum size of window to 600 px (width) by 250 px (height)
 root.maxsize(600, 800) # Set the maximum size of window to 600 px (width) by 800 px (height)
 
-# ================================  Frames  ================================
+# ============================================  Frames  ============================================
 
 # Create 0th frame for the Title only
 title_frame = LabelFrame(root, borderwidth = 0, pady = 5)
 title_frame.pack(side = "top", anchor = "center")
 
 # Create 1st frame for the dropdown menu
-dropdown_frame = LabelFrame(root, borderwidth = 0, pady = 5)
+dropdown_frame = LabelFrame(root, borderwidth = 5, pady = 0)
 dropdown_frame.pack()
 
 # Create 2nd frame for each query
-frame = Frame(root, borderwidth = 0, padx = 5, pady = 5)
-frame.pack(padx = 2)
+textfield_frame = Frame(root, borderwidth = 0, padx = 5, pady = 5)
+textfield_frame.pack(padx = 2)
 
 # ======================================== Dropdown Options ========================================
 
@@ -63,42 +63,58 @@ query_options = [
 # Command for selected dropdown menu, where event checks for changes in dropdown
 def select_from_dropdown(event):
 	# myLabel = Label(root).pack()
-	for widget in frame.grid_slaves():
+	for widget in textfield_frame.grid_slaves():
 		if int(widget.grid_info()["row"]) > 1:
 			widget.grid_forget()
 	# The Create Database dropdown is not necessary, but an option to recreate the database could be
 	# an option if we need to test other stuff with the query.
 	if clicked.get() == "Part 2 - Query 1":
 		# Query 1 - Add New Borrower
-		query1_label = Label(frame, text = "Insert New Borrower Into Database")
+		query1_label = Label(textfield_frame, text = "Insert New Borrower Into Database")
 		query1_label.grid(row = 3, column = 0, columnspan = 2)
 
 		# Textbox Fields
-		bo_name = Entry(frame, width = 30)
+		bo_name = Entry(textfield_frame, width = 30)
 		bo_name.grid(row = 4, column = 1)
 
-		bo_address = Entry(frame, width = 30)
+		bo_address = Entry(textfield_frame, width = 30)
 		bo_address.grid(row = 5, column = 1)
 
-		bo_phone = Entry(frame, width = 30)
+		bo_phone = Entry(textfield_frame, width = 30)
 		bo_phone.grid(row = 6, column = 1)
 
 		# Textbox Labels
-		bo_name_label = Label(frame, text = "Borrower's Name")
+		bo_name_label = Label(textfield_frame, text = "Borrower's Name")
 		bo_name_label.grid(row = 4, column = 0, sticky = "w")
 
-		bo_address_label = Label(frame, text = "Borrower's Address")
+		bo_address_label = Label(textfield_frame, text = "Borrower's Address")
 		bo_address_label.grid(row = 5, column = 0, sticky = "w")
 
-		bo_phone_label = Label(frame, text = "Borrower's Phone")
+		bo_phone_label = Label(textfield_frame, text = "Borrower's Phone")
 		bo_phone_label.grid(row = 6, column = 0, sticky = "w")
 
 	elif clicked.get() == "Part 2 - Query 2":
 		# Query 2 - Update Phone Number Of Borrower
-		query2_label = Label(frame, text = "Update A Borrower's Phone Number")
+		query2_label = Label(textfield_frame, text = "Update A Borrower's Phone Number")
 		query2_label.grid(row = 3, column = 0, columnspan = 2)
+
+	elif clicked.get() == "Part 2 - Query 3":
+		# Query 2 - Update Phone Number Of Borrower
+		query3_label = Label(textfield_frame, text = "Increase Number Of Book Copies By 1 In A Branch")
+		query3_label.grid(row = 3, column = 0, columnspan = 2)
+
+	elif clicked.get() == "Part 2 - Query 4a":
+		# Query 4a - Update Phone Number Of Borrower
+		query4a_label = Label(textfield_frame, text = "Insert A New Book With Details Regarding The Book, Publisher, and Author")
+		query4a_label.grid(row = 3, column = 0, columnspan = 2)
+
+	elif clicked.get() == "Part 2 - Query 4b":
+		# Query 4b - Update Phone Number Of Borrower
+		query4b_label = Label(textfield_frame, text = "Insert A New Branch With Branch Details")
+		query4b_label.grid(row = 3, column = 0, columnspan = 2)
+
 	else:
-		select_label = Label(frame, text = "Select the query using the dropdown above.")
+		select_label = Label(textfield_frame, text = "Select the query using the dropdown above.")
 		select_label.grid(row = 2, column = 0)
 
 # ======================================== Widget & Griding ========================================
@@ -128,8 +144,8 @@ dropdown.grid(row = 1)
 #	already having stuff in the root being managed by some pack(s).
 
 # We cannot use grid here since in the root, there were stuff that we already packed
-myButton = Button(root, text = "Select From List")
-myButton.pack()
+do_query = Button(root, text = "Select From List")
+do_query.pack()
 
 footer = Label(root, text = "Created By Group 2 - Chime Nguyen, Ivan Ko, Trung Nguyen",
 	  background = "blue", foreground = "white",
@@ -139,7 +155,7 @@ footer.pack(side = "bottom", anchor = "center")
 
 # ============================================== Main ==============================================
 
-select_label = Label(frame, text = "Select the query using the dropdown above.")
+select_label = Label(textfield_frame, text = "Select the query using the dropdown above.")
 select_label.grid(row = 2, column = 0)
 
 root.mainloop()

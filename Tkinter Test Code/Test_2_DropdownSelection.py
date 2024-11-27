@@ -78,6 +78,7 @@ title = Label(title_frame, text = "Library Management System",
 	  pady = 5)
 title.grid(row = 0, columnspan = 10)
 
+
 clicked = StringVar()
 clicked.set(query_options[0])
 
