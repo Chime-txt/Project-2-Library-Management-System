@@ -306,19 +306,19 @@ def part2_query1(query_runner):
 	verified = True
 	invalid_message = "The following information is missing/invalid: "
 
-	verify_entry = bo_name_entry.get()
-	if not verify_entry:
+	verify_name = bo_name_entry.get()
+	if not verify_name:
 		verified = False
 		invalid_message += "Borrower's Name. "
-	verify_entry = bo_address_entry.get()
-	if not verify_entry:
+	verify_address = bo_address_entry.get()
+	if not verify_address:
 		verified = False
 		invalid_message += "Borrower's Address. "
-	verify_entry = bo_phone_entry.get()
-	if not verify_entry:
+	verify_phone = bo_phone_entry.get()
+	if not verify_phone:
 		verified = False
 		invalid_message += "Borrower's Phone. "
-	if len(verify_entry) > PHONE_LENGTH:
+	if len(verify_phone) > PHONE_LENGTH:
 		verified = False
 		invalid_message += "Borrower's Phone Is Too Long. "
 
@@ -329,18 +329,26 @@ def part2_query1(query_runner):
 	# Insert the filled in data into the database after verifying that the data is valid
 	query_runner.execute("INSERT INTO BORROWER (Name, Address, Phone) VALUES (:name, :address, :phone)",
 					  {
-						  'name': bo_name_entry.get(),
-						  'address': bo_address_entry.get(),
-						  'phone': bo_phone_entry.get()
+						  'name': verify_name,
+						  'address': verify_address,
+						  'phone': verify_phone
 					  })
 	
+	# Find said user with exact details to find thei card number
+	query_runner.execute("""SELECT Card_no FROM BORROWER
+					  WHERE Name = ? AND Address = ? AND Phone = ?""",
+					  (verify_name, verify_address, verify_phone))
+	result_card_no = query_runner.fetchone()[0]
+
 	# Clear all entries that were used
 	bo_name_entry.delete(0, END)
 	bo_address_entry.delete(0, END)
 	bo_phone_entry.delete(0, END)
+	
+	result = "Inserted " + verify_name + " with Card Number " + str(result_card_no) + "."
 
 	# Return a message that the query was successfully inserted into the table.
-	return "Successfully Inserted New Borrower"
+	return result
 
 # Part 2 - Query 2 Creator: Chime Nguyen
 def part2_query2(query_runner):
