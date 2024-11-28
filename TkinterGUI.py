@@ -190,9 +190,7 @@ def select_from_dropdown(event):
 		query_select_label.config(text = "Find Books That Were Loaned Between Two Dates With Details")
 
 		# Textbox Fields Locations
-
 		bl_date_out_start_entry.grid(row = 4, column = 1)
-
 		bl_date_out_end_entry.grid(row = 5, column = 1)
 
 		# Textbox Labels Location
@@ -280,8 +278,11 @@ def select_from_dropdown(event):
 		query_select_label.config(text = "View All Details About A Book Loan")
 
 		# Textbox Fields Locations
+		b_title_entry.grid(row = 4, column = 1)
 
 		# Textbox Labels Location
+		b_title_label.grid(row = 4, column = 0, sticky = "w")
+		
 		
 		return
 	else:
@@ -485,7 +486,7 @@ def part2_query4b(query_runner):
 
 	return
 
-# Part 2 - Query 5 Creator: 
+# Part 2 - Query 5 Creator: Trung Nguyen
 def part2_query5(query_runner):
 	start_date = bl_date_out_start_entry.get()
 	end_date = bl_date_out_end_entry.get()
@@ -494,6 +495,10 @@ def part2_query5(query_runner):
 		results_label.config(text = "Please fill in all fields.")
 		results_label.grid(row = 100, column = 0, columnspan = 2)
 		return
+	
+	# Clear previous results
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
 	
 	# Execute the query
 	query_runner.execute("""
@@ -512,32 +517,43 @@ def part2_query5(query_runner):
 	results = query_runner.fetchall()
 
 	# Display the results
-	result_text = "Title                          Branch Name                  Days Borrowed\n"
-	result_text += "----------------------------  ----------------------------  --------------\n"
+	title = ''
+	branch_name = ''
+	days_borrowed = ''
+	result_title = Label(results_frame, text = "Title\n______________________")
+	result_branch_name = Label(results_frame, text = "Branch Name\n______________________")
+	result_days_borrowed = Label(results_frame, text = "Days Borrowed\n______________________")
 	for row in results:
-		title = row[0]
-		branch_name = row[1]
-		days_borrowed = row[2]
-
-        # Handle None values for Days_Borrowed since we have two NULL returns
-		if days_borrowed is None:
-			days_borrowed_str = "Not Returned"
+		# Handle None values for Days_Borrowed since we have two NULL returns
+		if row[2] is None:
+			days_borrowed_str = str("Not Returned")
 		else:
-			days_borrowed_str = str(days_borrowed)
+			days_borrowed_str = str(row[2])
 
-		# My lame attempt of formatting the output to align columns but it aint working
-		result_text += f"{title:^30}  {branch_name:^30}  {days_borrowed_str:^10}\n"
+		title += str(row[0] + "\n")
+		branch_name += str(row[1] + "\n")
+		days_borrowed += days_borrowed_str + "\n"
+
 	
-	results_label.config(text = result_text)
-	results_label.grid(row = 100, column = 0, columnspan = 2)
+
+	# Create labels for each array of
+	result_label1 = Label(results_frame, text = title)
+	result_label2 = Label(results_frame, text = branch_name)
+	result_label3 = Label(results_frame, text = days_borrowed)	
+	# results_label.config(text = result_text)
+	# results_label.grid(row = 100, column = 0, columnspan = 2)
+
+	# Display the results using the grid and differing columns
+	result_title.grid(row = 99, column = 0)
+	result_branch_name.grid(row = 99, column = 1)
+	result_days_borrowed.grid(row = 99, column = 2)
+	result_label1.grid(row = 100, column = 0)
+	result_label2.grid(row = 100, column = 1)
+	result_label3.grid(row = 100, column = 2)
 
 	# Clear the entries
 	bl_date_out_start_entry.delete(0, END)
 	bl_date_out_end_entry.delete(0, END)
-
-
-
-	
 
 	return
 
@@ -764,8 +780,86 @@ def part3_query2():
 
 	return "Successfully executed query 3.2"
 
-# Part 3 - Query 3 Creator: 
+# Part 3 - Query 3 Creator: Trung Nguyen
 def part3_query3(query_runner):
+	# Drop the view if it exists already
+	query_runner.execute("DROP VIEW IF EXISTS vBookLoanInfo;")
+
+	query_runner.execute("""
+		CREATE VIEW vBookLoanInfo AS
+		SELECT
+			BL.Card_No,
+			BR.Name AS 'Borrower Name',
+			BL.Date_Out,
+			BL.Due_Date,
+			BL.Returned_date,		  
+			CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Date_Out)) AS INTEGER) AS 'TotalDays',
+			B.Title AS 'Book Title',
+			CASE WHEN BL.Late = 1
+				THEN CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER)
+				ELSE 0
+			END AS 'DaysLate',
+			BL.Branch_Id,
+			CASE WHEN BL.Late = 1
+				THEN CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER) * LB.LateFee
+				ELSE 0
+			END AS 'LateFeeBalance'
+		FROM BOOK_LOANS BL
+		JOIN BORROWER BR ON BL.Card_No = BR.Card_No
+		JOIN BOOK B ON BL.Book_Id = B.Book_Id
+		JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id;
+		""")
+	
+	# Query the view for the specific book title 
+	print(b_title_entry.get())
+	query_runner.execute("SELECT * FROM vBookLoanInfo WHERE \"Book Title\" = ?", (b_title_entry.get(),))
+	
+	# Get the results
+	results = query_runner.fetchall()
+
+	# Clear the old results from the frame 
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
+	
+	# Display the results
+	if results:
+		# Define headers for the table
+		headers = ["Card No", 
+			"Borrower Name", 
+			"Date Out", 
+			"Due Date", 
+			"Returned Date", 
+			"Total Days", 
+			"Book Title", 
+			"Days Late", 
+			"Branch Id", 
+			"Late Fee Balance"]
+
+		# Display headers in the first row
+		# There's 10 columns from the headers
+		for col in range(len(headers)):
+			header_label = Label(results_frame, text=headers[col])
+			header_label.grid(row=0, column=col)
+
+		# Display each row of results
+		for row_index in range(len(results)):
+			# Get the current row data
+			current_row = results[row_index]
+
+			# Display each value in the current row
+			for col_index in range(len(current_row)):
+				value = current_row[col_index]
+				result_label = Label(results_frame, text=value)
+				result_label.grid(row=row_index + 1, column=col_index)
+	else:
+		# If no results found
+		book_title = b_title_entry.get()
+		no_results_label = Label(results_frame, text=f"No results found for: {book_title}")
+		no_results_label.grid(row=1, column=0)
+
+	# Clear the entries
+	b_title_entry.delete(0, END)
+
 
 	return
 
@@ -779,7 +873,7 @@ def part3_query3(query_runner):
 # General Do Query Creator: Chime Nguyen
 def do_query():
 	# Create a new connection dedicated to the queries
-	query_conn = sqlite3.connect('test.db') # Edit this to be the right database name
+	query_conn = sqlite3.connect('LMS_2.db') # Edit this to be the right database name
 
 	# Remove previous results details
 	for widget in results_frame.grid_slaves():
@@ -959,7 +1053,7 @@ def do_query():
 def create_library_tables():
 	# Using our knowledge from Programming Languages, we could check if the database exists, but we may not need to here
 	# Connect to or create a Library Management System Database and create the tables, if they are not created
-	conn = sqlite3.connect('test.db') # Edit this to be the right database name
+	conn = sqlite3.connect('LMS_2.db') # Edit this to be the right database name
 
 	# Create a cursor to create the tables
 	create_tables = conn.cursor()
@@ -1092,7 +1186,7 @@ def import_csv_files():
         table_name = os.path.splitext(csv_file)[0].upper()
         file_path = os.path.join(dataset_dir, csv_file)
         
-        conn = sqlite3.connect('test.db') # Edit this to be the right database name
+        conn = sqlite3.connect('LMS_2.db') # Edit this to be the right database name
         cursor = conn.cursor()
         
         with open(file_path, 'r') as file: # Open file for reading
