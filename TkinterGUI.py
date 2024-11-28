@@ -1,53 +1,3 @@
-import csv
-import os
-
-def import_csv_files():
-    dataset_dir = "LMSDataset"
-    csv_files = [f for f in os.listdir(dataset_dir) if f.endswith('.csv')]
-    
-    for csv_file in csv_files:
-        table_name = os.path.splitext(csv_file)[0].upper()
-        file_path = os.path.join(dataset_dir, csv_file)
-        
-        conn = sqlite3.connect('test.db') # Edit this to be the right database name
-        cursor = conn.cursor()
-        
-        with open(file_path, 'r') as file: # Open file for reading
-            csv_reader = csv.reader(file) 
-            headers = next(csv_reader) # First row is header 
-            
-            # Get the table structure
-			# PRAGMA gets the list of tuples and information and store into the cursor
-            cursor.execute(f"PRAGMA table_info({table_name})")
-			# PRAGMA returns: cid, name, type, notnull, dflt_value, pk
-			# fetchall gets the rows returned by PRAGMA above
-			# get the column name from the second element (name) of the tuple
-            table_columns = [column[1] for column in cursor.fetchall()]
-            
-            # Prepare the INSERT statement
-            columns = ', '.join(table_columns)
-			# Placeholders to make sure you have the correct number of columns
-			# The number of placeholders should match the number of columns
-			# Should look like this (?, ?, ?, ...)
-            placeholders = ', '.join(['?' for _ in table_columns])
-			# This is just sqlite3 syntax for inserting data into a table
-            insert_query = f"INSERT OR REPLACE INTO {table_name} ({columns}) VALUES ({placeholders})"
-            
-            # Insert data
-            for row in csv_reader:
-                # Make sure the row has the correct number of elements
-                if len(row) != len(table_columns):
-                    print(f"Skipping row in {csv_file}: {row}")
-                    continue
-                
-                cursor.execute(insert_query, row)
-        
-        conn.commit()
-        conn.close()
-    
-    print("CSV files imported successfully")
-
-
 # Install GUI For Python
 # -- PyQt5 : pip3 install PyQt5
 # -- Tkinter: pip3 install tkinter
@@ -56,6 +6,8 @@ def import_csv_files():
 # Import TKinter
 from tkinter import *
 import sqlite3
+import csv
+import os
 
 # BEGIN ======================================== TODO ======================================== BEGIN
 # TODO: Create A Database That Can Automatically Create The Tables And Add Data From CSV Files
@@ -64,11 +16,13 @@ import sqlite3
 # END ========================================== TODO ========================================++ END
 
 
+
 # BEGIN ================================ Query Generalization ================================ BEGIN
 # All queries below are written to be generalized, such that the user can input any vaild data and
 # it can return a result without errors
 # More specifically, any queries that involve a WHERE clause are required to be generalized
 # END ================================== Query Generalization ================================++ END
+
 
 
 # BEGIN ================================== Rows Information ================================== BEGIN
@@ -80,6 +34,7 @@ import sqlite3
 # END ==================================== Rows Information ==================================== END
 
 
+
 # BEGIN ================================== Creating Windows ================================== BEGIN
 root = Tk()
 root.title('Library Management System')
@@ -87,6 +42,7 @@ root.geometry("600x400")
 root.minsize(600, 250)
 root.maxsize(600, 800)
 # END ==================================== Creating Windows ==================================== END
+
 
 
 # BEGIN ======================================  Frames  ====================================== BEGIN
@@ -99,6 +55,7 @@ textfield_frame = Frame(root, borderwidth = 0, padx = 5, pady = 5)
 # Create a frame for the resutls
 results_frame = Frame(root, borderwidth = 0, padx = 5, pady = 5)
 # END ========================================  Frames  ======================================== END
+
 
 
 # BEGIN ================================== Dropdown Options ================================== BEGIN
@@ -128,6 +85,7 @@ query_options = [
 	"Reset Database"					# query_options[20]
 ]
 # END ==================================== Dropdown Options ==================================== END
+
 
 
 # BEGIN ================================== Dropdown Command ================================== BEGIN
@@ -291,7 +249,9 @@ dropdown.grid(row = 1)
 # END ==================================== Dropdown Command ==================================== END
 
 
+
 # BEGIN ================================== Query  Functions ================================== BEGIN
+# Part 2 - Query 1 Creator: Chime Nguyen
 def part2_query1(query_runner):
 	# Variable for the phone max length
 	phone_length = 12
@@ -335,10 +295,78 @@ def part2_query1(query_runner):
 
 	# Return a message that the query was successfully inserted into the table.
 	return "Successfully Inserted New Borrower"
+
+# Part 2 - Query 2 Creator: Chime Nguyen
+def part2_query2(query_runner):
+
+	return
+
+# Part 2 - Query 3 Creator: 
+def part2_query3(query_runner):
+
+	return
+
+# Part 2 - Query 4a Creator: 
+def part2_query4a(query_runner):
+
+	return
+
+# Part 2 - Query 4b Creator: 
+def part2_query4b(query_runner):
+
+	return
+
+# Part 2 - Query 5 Creator: 
+def part2_query5(query_runner):
+
+	return
+
+# Part 2 - Query 6 Creator: 
+def part2_query6(query_runner):
+
+	return
+
+# Part 2 - Query 7 Creator: 
+def part2_query7(query_runner):
+
+	return
+
+# Part 2 - Query 8 Creator: 
+def part2_query8(query_runner):
+
+	return
+
+# Part 2 - Query 9 Creator: 
+def part2_query9(query_runner):
+
+	return
+
+# Part 2 - Query 10 Creator: 
+def part2_query10(query_runner):
+
+	return
+
+# Part 3 - Query 1 Creator: 
+def part3_query1(query_runner):
+
+	return
+
+# Part 3 - Query 2 Creator: 
+def part3_query2(query_runner):
+
+	return
+
+# Part 3 - Query 3 Creator: 
+def part3_query3(query_runner):
+
+	return
+
 	
 # END ==================================== Query  Functions ==================================== END
 
 
+
+# This stuff should NOT be changed
 # BEGIN ============================== Complete Queries Command ============================== BEGIN
 # General Do Query Creator: Chime Nguyen
 def do_query():
@@ -353,61 +381,76 @@ def do_query():
 		# Do computations for Part 2 - Query 1
 		results_text = part2_query1(query_runner)
 		results_label.config(text = results_text)
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+
 	elif clicked.get() == query_options[3]:
 		# Do computations for Part 2 - Query 2
-		results_label.config(text = "Results For Part 2 - Query 2")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query2(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[4]:
 		# Do computations for Part 2 - Query 3
-		results_label.config(text = "Results For Part 2 - Query 3")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query3(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[5]:
 		# Do computations for Part 2 - Query 4a
-		results_label.config(text = "Results For Part 2 - Query 4a")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query4a(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[6]:
 		# Do computations for Part 2 - Query 4b
-		results_label.config(text = "Results For Part 2 - Query 4b")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query4b(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[7]:
 		# Do computations for Part 2 - Query 5
-		results_label.config(text = "Results For Part 2 - Query 5")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query5(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[8]:
 		# Do computations for Part 2 - Query 6
-		results_label.config(text = "Results For Part 2 - Query 6")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query6(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[9]:
 		# Do computations for Part 2 - Query 7
-		results_label.config(text = "Results For Part 2 - Query 7")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query7(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[10]:
 		# Do computations for Part 2 - Query 8
-		results_label.config(text = "Results ForPart 2 -  Query 8")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query8(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[11]:
 		# Do computations for Part 2 - Query 9
-		results_label.config(text = "Results For Part 2 - Query 9")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query9(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[12]:
 		# Do computations for Part 2 - Query 10
-		results_label.config(text = "Results For Part 2 - Query 10")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part2_query10(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[15]:
 		# Do computations for Part 3 - Query 1
-		results_label.config(text = "Results For Part 3 - Query 1")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part3_query1(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[16]:
 		# Do computations for Part 3 - Query 2
-		results_label.config(text = "Results For Part 3 - Query 2")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part3_query2(query_runner)
+		results_label.config(text = results_text)
+
 	elif clicked.get() == query_options[17]:
 		# Do computations for Part 3 - Query 3
-		results_label.config(text = "Results For Part 3 - Query 3")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
+		results_text = part3_query3(query_runner)
+		results_label.config(text = results_text)
+
 	else:
 		results_label.config(text = "")
+
+	results_label.grid(row = 100, column = 0, columnspan = 2)
 
 	# Commit any changes to the database
 	query_conn.commit()
@@ -587,8 +630,60 @@ def create_library_tables():
 create_library_tables()
 # END ===================================== Table Creation ===================================== END
 
+
+
+# BEGIN ==================================== Import Datas ==================================== BEGIN
+def import_csv_files():
+    dataset_dir = "LMSDataset"
+    csv_files = [f for f in os.listdir(dataset_dir) if f.endswith('.csv')]
+    
+    for csv_file in csv_files:
+        table_name = os.path.splitext(csv_file)[0].upper()
+        file_path = os.path.join(dataset_dir, csv_file)
+        
+        conn = sqlite3.connect('test.db') # Edit this to be the right database name
+        cursor = conn.cursor()
+        
+        with open(file_path, 'r') as file: # Open file for reading
+            csv_reader = csv.reader(file) 
+            headers = next(csv_reader) # First row is header 
+            
+            # Get the table structure
+			# PRAGMA gets the list of tuples and information and store into the cursor
+            cursor.execute(f"PRAGMA table_info({table_name})")
+			# PRAGMA returns: cid, name, type, notnull, dflt_value, pk
+			# fetchall gets the rows returned by PRAGMA above
+			# get the column name from the second element (name) of the tuple
+            table_columns = [column[1] for column in cursor.fetchall()]
+            
+            # Prepare the INSERT statement
+            columns = ', '.join(table_columns)
+			# Placeholders to make sure you have the correct number of columns
+			# The number of placeholders should match the number of columns
+			# Should look like this (?, ?, ?, ...)
+            placeholders = ', '.join(['?' for _ in table_columns])
+			# This is just sqlite3 syntax for inserting data into a table
+            insert_query = f"INSERT OR REPLACE INTO {table_name} ({columns}) VALUES ({placeholders})"
+            
+            # Insert data
+            for row in csv_reader:
+                # Make sure the row has the correct number of elements
+                if len(row) != len(table_columns):
+                    print(f"Skipping row in {csv_file}: {row}")
+                    continue
+                
+                cursor.execute(insert_query, row)
+        
+        conn.commit()
+        conn.close()
+    
+    print("CSV files imported successfully")
+
 # Import CSV files
 import_csv_files()
+# END ====================================== Import Datas ====================================== END
+
+
 
 # BEGIN ==================================== Query Button ==================================== BEGIN
 # This button will run a function called do_query and check against all of the queries before doing
@@ -672,6 +767,7 @@ ba_author_name_label = Entry(textfield_frame, text = "Author's Name", width = 30
 # END ==================================== Attribute Labels ==================================== END
 
 
+
 # BEGIN ================================= Attribute  Entries ================================= BEGIN
 # These are all of the entries for the attributes from the PUBLISHER table
 # Not all attributes may be used here
@@ -717,6 +813,7 @@ bc_no_of_copies_entry = Entry(textfield_frame, width = 30)
 ba_book_id_entry = Entry(textfield_frame, width = 30)
 ba_author_name_entry = Entry(textfield_frame, width = 30)
 # END =================================== Attribute  Entries =================================== END
+
 
 
 # BEGIN =================================== Packing  Order =================================== BEGIN
