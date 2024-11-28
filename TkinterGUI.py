@@ -125,11 +125,17 @@ def select_from_dropdown(event):
 		return
 	elif clicked.get() == query_options[4]:
 		# Part 2 - Query 3 - Add 1 To Book Copies In A Branch
-		query_select_label.config(text = "Increase Number Of Book Copies By 1 In A Branch")
+		query_select_label.config(text = "Increase Number Of Book Copies In A Branch")
 
 		# Textbox Fields Locations
+		bc_branch_id_entry.grid(row = 4, column = 1)
+		bc_no_of_copies_entry.grid(row = 5, column = 1)
 
 		# Textbox Labels Location
+		bc_branch_id_label.grid(row = 4, column = 0, sticky = "w")
+		bc_no_of_copies_label.grid(row = 5, column = 0, sticky = "w")
+		
+
 		
 		return
 	elif clicked.get() == query_options[5]:
@@ -303,6 +309,47 @@ def part2_query2(query_runner):
 
 # Part 2 - Query 3 Creator: 
 def part2_query3(query_runner):
+	# Get input values
+	branch_id_or_name = bc_branch_id_entry.get()
+	num_copies = bc_no_of_copies_entry.get()
+
+	# Check if the values are valid 
+	if not branch_id_or_name or not num_copies:
+		results_label.config(text = "Please fill in all fields.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	try:
+		num_copies = int(num_copies)
+	except ValueError:
+		results_label.config(text = "Number of copies must be an integer.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	
+	# Check if branch_id_or_name is a number or a string
+	try:
+		branch_id = int(branch_id_or_name)
+	except ValueError:
+		# If it's not an int, assume it's a branch name
+		query_runner.execute("SELECT Branch_Id FROM LIBRARY_BRANCH WHERE Branch_Name = ?", (branch_id_or_name,))
+		branch_id_result = query_runner.fetchone()
+		if branch_id_result:
+			branch_id = branch_id_result[0]
+		else:
+			results_label.config(text = "Branch not found.")
+			results_label.grid(row = 100, column = 0, columnspan = 2)
+			return
+	else:
+		branch_id = branch_id_or_name
+
+	# Update the BOOK_COPIES table
+	query_runner.execute("UPDATE BOOK_COPIES SET No_Of_Copies = No_Of_Copies + ? WHERE Branch_Id = ?", (num_copies, branch_id))
+	
+	# Clear the entries
+	bc_branch_id_entry.delete(0, END)
+	bc_no_of_copies_entry.delete(0, END)
+
+	results_label.config(text = "Successfully updated book copies.")
+	results_label.grid(row = 100, column = 0, columnspan = 2)
 
 	return
 
@@ -722,15 +769,15 @@ footer = Label(root, text = "Created By Group 2 - Chime Nguyen, Ivan Ko, Trung N
 
 # These are all of the labels for the attributes from the PUBLISHER table
 # Not all attributes may be used here
-p_publisher_name_label = Entry(textfield_frame, text = "Publisher's Name", width = 30)
-p_phone_label = Entry(textfield_frame, text = "Publisher's Phone", width = 30)
-p_address_label = Entry(textfield_frame, text = "Publisher's Address", width = 30)
+p_publisher_name_label = Label(textfield_frame, text = "Publisher's Name", width = 30)
+p_phone_label = Label(textfield_frame, text = "Publisher's Phone", width = 30)
+p_address_label = Label(textfield_frame, text = "Publisher's Address", width = 30)
 
 # These are all of the labels for the attributes from the LIBRARY_BRANCH table
 # Not all attributes may be used here
-lb_branch_id_label = Entry(textfield_frame, text = "Library Branch ID", width = 30)
-lb_branch_name_label = Entry(textfield_frame, text = "Library Branch's Name", width = 30)
-lb_branch_address_label = Entry(textfield_frame, text = "Library Branch's Address", width = 30)
+lb_branch_id_label = Label(textfield_frame, text = "Library Branch ID", width = 30)
+lb_branch_name_label = Label(textfield_frame, text = "Library Branch's Name", width = 30)
+lb_branch_address_label = Label(textfield_frame, text = "Library Branch's Address", width = 30)
 
 # These are all of the labels for the attributes from the BORROWER table
 # Not all attributes may be used here
@@ -740,29 +787,29 @@ bo_phone_label = Label(textfield_frame, text = "Borrower's Phone", width = 30)
 
 # These are all of the labels for the attributes from the BOOK table
 # Not all attributes may be used here
-b_book_id_label = Entry(textfield_frame, text = "Book ID", width = 30)
-b_title_label = Entry(textfield_frame, text = "Book Title", width = 30)
-b_publisher_name_label = Entry(textfield_frame, text = "Book Publisher's Name", width = 30)
+b_book_id_label = Label(textfield_frame, text = "Book ID", width = 30)
+b_title_label = Label(textfield_frame, text = "Book Title", width = 30)
+b_publisher_name_label = Label(textfield_frame, text = "Book Publisher's Name", width = 30)
 
 # These are all of the labels for the attributes from the BOOK_LOANS table
 # Not all attributes may be used here
-bl_book_id_label = Entry(textfield_frame, text = "Book ID", width = 30)
-bl_branch_id_label = Entry(textfield_frame, text = "Library Branch ID", width = 30)
-bl_card_no_label = Entry(textfield_frame, text = "Borrower Card No", width = 30)
-bl_date_out_label = Entry(textfield_frame, text = "Date Out", width = 30)
-bl_due_date_label = Entry(textfield_frame, text = "Due Date", width = 30)
-bl_returned_date_label = Entry(textfield_frame, text = "Return Date", width = 30)
+bl_book_id_label = Label(textfield_frame, text = "Book ID", width = 30)
+bl_branch_id_label = Label(textfield_frame, text = "Library Branch ID", width = 30)
+bl_card_no_label = Label(textfield_frame, text = "Borrower Card No", width = 30)
+bl_date_out_label = Label(textfield_frame, text = "Date Out", width = 30)
+bl_due_date_label = Label(textfield_frame, text = "Due Date", width = 30)
+bl_returned_date_label = Label(textfield_frame, text = "Return Date", width = 30)
 
 # These are all of the labels for the attributes from the BOOK_COPIES table
 # Not all attributes may be used here
-bc_book_id_label = Entry(textfield_frame, text = "Book ID", width = 30)
-bc_branch_id_label = Entry(textfield_frame, text = "Library Branch ID", width = 30)
-bc_no_of_copies_label = Entry(textfield_frame, text = "Number Of Copies", width = 30)
+bc_book_id_label = Label(textfield_frame, text = "Book ID", width = 30)
+bc_branch_id_label = Label(textfield_frame, text = "Library Branch ID", width = 30)
+bc_no_of_copies_label = Label(textfield_frame, text = "Number Of Copies", width = 30)
 
 # These are all of the labels for the attributes from the BOOK_AUTHORS table
 # Not all attributes may be used here
-ba_book_id_label = Entry(textfield_frame, text = "Book ID", width = 30)
-ba_author_name_label = Entry(textfield_frame, text = "Author's Name", width = 30)
+ba_book_id_label = Label(textfield_frame, text = "Book ID", width = 30)
+ba_author_name_label = Label(textfield_frame, text = "Author's Name", width = 30)
 
 # END ==================================== Attribute Labels ==================================== END
 
