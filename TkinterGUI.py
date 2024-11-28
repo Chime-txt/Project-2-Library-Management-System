@@ -144,19 +144,13 @@ def select_from_dropdown(event):
 		query_select_label.config(text = "Increase Number Of Book Copies In A Branch")
 
 		# Textbox Fields Locations
-		bc_branch_id_entry.grid(row = 5, column = 1)
-		bc_no_of_copies_entry.grid(row = 8, column = 1)
+		bc_branch_id_entry.grid(row = 4, column = 1)
+		bc_no_of_copies_entry.grid(row = 5, column = 1)
 
 		# Textbox Labels Location
-		bc_branch_id_label.grid(row = 4, column = 0, sticky = "w")
-		temp_label = Label(textfield_frame, text = "======  OR  ======", justify = "center")
-		temp_label.grid(row = 5, column = 0)
-		lb_branch_name_label.grid(row = 6, column = 0, sticky = "w")
-		spacer_label = Label(textfield_frame, text = "")
-		spacer_label.grid(row = 7)
-		bc_no_of_copies_label.grid(row = 8, column = 0, sticky = "w")
-		
-
+		branch_name_or_id_label = Label(textfield_frame, text = "Library Branch's Name or ID", width = 30)
+		branch_name_or_id_label.grid(row = 4, column = 0, sticky = "w")
+		bc_no_of_copies_label.grid(row = 5, column = 0, sticky = "w")
 		
 		return
 	elif clicked.get() == query_options[5]:
@@ -164,18 +158,28 @@ def select_from_dropdown(event):
 		query_select_label.config(text = "Insert A New Book With Details Regarding The Book, Publisher, and Author")
 
 		# Textbox Fields Locations
+		b_title_entry.grid(row = 4, column = 1)
+		ba_author_name_entry.grid(row = 5, column = 1)
+		b_publisher_name_entry.grid(row = 6, column = 1)
 
 		# Textbox Labels Location
-		
+		b_title_label.grid(row = 4, column = 0, sticky = "w")
+		ba_author_name_label.grid(row = 5, column = 0, sticky = "w")
+		b_publisher_name_label.grid(row = 6, column = 0, sticky = "w")
+
 		return
 	elif clicked.get() == query_options[6]:
 		# Part 2 - Query 4b - Add New Branch With Details
 		query_select_label.config(text = "Insert A New Branch With Branch Details")
 
 		# Textbox Fields Locations
+		lb_branch_name_entry.grid(row = 4, column = 1)
+		lb_branch_address_entry.grid(row = 5, column = 1)
 
 		# Textbox Labels Location
-		
+		lb_branch_name_label.grid(row = 4, column = 0, sticky = "w")
+		lb_branch_address_label.grid(row = 5, column = 0, sticky = "w")
+
 		return
 	elif clicked.get() == query_options[7]:
 		# Part 2 - Query 5 - Loaned Books Between Two Dates With Details
@@ -183,7 +187,17 @@ def select_from_dropdown(event):
 
 		# Textbox Fields Locations
 
+		bl_date_out_start_entry.grid(row = 4, column = 1)
+
+		bl_date_out_end_entry.grid(row = 5, column = 1)
+
 		# Textbox Labels Location
+		bl_date_out_start_label = Label(textfield_frame, text = "Start Date (YYYY-MM-DD)")
+		bl_date_out_start_label.grid(row = 4, column = 0, sticky = "w")
+	
+		bl_date_out_end_label = Label(textfield_frame, text = "End Date (YYYY-MM-DD)")
+		bl_date_out_end_label.grid(row = 5, column = 0, sticky = "w")
+		
 		
 		return
 	elif clicked.get() == query_options[8]:		# Part 2 - Query 6
@@ -399,18 +413,119 @@ def part2_query3(query_runner):
 
 	return "Successfully updated book copies."
 
-# Part 2 - Query 4a Creator: 
+# Part 2 - Query 4a Creator: Trung Nguyen
 def part2_query4a(query_runner):
+	# Get input values
+	book_title = b_title_entry.get()
+	publisher_name = b_publisher_name_entry.get()
+	author_name = ba_author_name_entry.get()
+
+	# Check if the values are valid
+	if not book_title or not publisher_name or not author_name:
+		results_label.config(text = "Please fill in all fields.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	
+	# Insert Publisher if it doesn't exist in the database
+	query_runner.execute("INSERT OR IGNORE INTO PUBLISHER (Publisher_Name) VALUES (?)", (publisher_name,))
+
+	# Insert Book
+	query_runner.execute("INSERT INTO BOOK (Title, Publisher_name) VALUES (?, ?)", (book_title, publisher_name))
+
+	# Get the Book_Id of the book that was just inserted
+	query_runner.execute("SELECT Book_Id FROM BOOK WHERE Title = ? AND Publisher_name = ?", (book_title, publisher_name))
+	book_id = query_runner.fetchone()[0]
+
+	# Insert Author
+	query_runner.execute("INSERT INTO BOOK_AUTHORS (Book_Id, Author_Name) VALUES (?, ?)", (book_id, author_name))
+
+	# Clear the entries
+	b_title_entry.delete(0, END)
+	b_publisher_name_entry.delete(0, END)
+	ba_author_name_entry.delete(0, END)
+
+	results_label.config(text = "Successfully added new book.")
+	results_label.grid(row = 100, column = 0, columnspan = 2)
 
 	return
 
-# Part 2 - Query 4b Creator: 
+# Part 2 - Query 4b Creator: Trung Nguyen
 def part2_query4b(query_runner):
+	# Get input values
+	branch_name = lb_branch_name_entry.get()
+	branch_address = lb_branch_address_entry.get()
+
+	# Check if the values are valid
+	if not branch_name or not branch_address:
+		results_label.config(text = "Please fill in all fields.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	
+	# Insert new Branch
+	query_runner.execute("INSERT INTO LIBRARY_BRANCH (Branch_Name, Branch_Address) VALUES (?, ?)", (branch_name, branch_address))
+
+	# Clear the entries
+	lb_branch_name_entry.delete(0, END)
+	lb_branch_address_entry.delete(0, END)
+
+	results_label.config(text = "Successfully added new branch.")
+	results_label.grid(row = 100, column = 0, columnspan = 2)
 
 	return
 
 # Part 2 - Query 5 Creator: 
 def part2_query5(query_runner):
+	start_date = bl_date_out_start_entry.get()
+	end_date = bl_date_out_end_entry.get()
+
+	if not start_date or not end_date:
+		results_label.config(text = "Please fill in all fields.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	
+	# Execute the query
+	query_runner.execute("""
+		SELECT B.Title, LB.Branch_Name,
+			CASE WHEN BL.Returned_date IS NOT NULL THEN
+				CAST(JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Date_Out) AS INTEGER)
+				ELSE CAST(JULIANDAY(CURRENT_DATE) - JULIANDAY(BL.Date_Out) AS INTEGER) -- Today's date meaning it was never returned
+			END AS Days_Borrowed
+		FROM BOOK_LOANS BL JOIN BOOK B ON BL.Book_Id = B.Book_Id
+			JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+		WHERE BL.Date_Out BETWEEN ? AND ?
+		ORDER BY B.Title, LB.Branch_Name;
+		""", (start_date, end_date))
+	
+	# Get the results
+	results = query_runner.fetchall()
+
+	# Display the results
+	result_text = "Title                          Branch Name                  Days Borrowed\n"
+	result_text += "----------------------------  ----------------------------  --------------\n"
+	for row in results:
+		title = row[0]
+		branch_name = row[1]
+		days_borrowed = row[2]
+
+        # Handle None values for Days_Borrowed since we have two NULL returns
+		if days_borrowed is None:
+			days_borrowed_str = "Not Returned"
+		else:
+			days_borrowed_str = str(days_borrowed)
+
+		# My lame attempt of formatting the output to align columns but it aint working
+		result_text += f"{title:^30}  {branch_name:^30}  {days_borrowed_str:^10}\n"
+	
+	results_label.config(text = result_text)
+	results_label.grid(row = 100, column = 0, columnspan = 2)
+
+	# Clear the entries
+	bl_date_out_start_entry.delete(0, END)
+	bl_date_out_end_entry.delete(0, END)
+
+
+
+	
 
 	return
 
@@ -1008,6 +1123,9 @@ bl_card_no_entry = Entry(textfield_frame, width = 30)
 bl_date_out_entry = Entry(textfield_frame, width = 30)
 bl_due_date_entry = Entry(textfield_frame, width = 30)
 bl_returned_date_entry = Entry(textfield_frame, width = 30)
+bl_date_out_start_entry = Entry(textfield_frame, width = 30)
+bl_date_out_end_entry = Entry(textfield_frame, width = 30)
+
 
 # These are all of the entries for the attributes from the BOOK_COPIES table
 # Not all attributes may be used here
