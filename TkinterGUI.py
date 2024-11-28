@@ -39,8 +39,8 @@ import os
 root = Tk()
 root.title('Library Management System')
 root.geometry("600x600")
-root.minsize(600, 250)
-root.maxsize(600, 800)
+root.minsize(600, 600)
+root.maxsize(600, 900)
 # END ==================================== Creating Windows ==================================== END
 
 
@@ -106,6 +106,10 @@ def select_from_dropdown(event):
 	for widget in textfield_frame.grid_slaves():
 		if int(widget.grid_info()["row"]) > 2:
 			widget.grid_forget()
+
+	# Remove previous results details
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget()
 
 	# Clear query results
 	results_label.config(text = "")
@@ -564,7 +568,6 @@ def part2_query6(query_runner):
 
 # Part 2 - Query 7 Creator: Chime Nguyen
 def part2_query7(query_runner):
-
 	# Count the number of books from all branches, including returned, currently borrowed, and late books
 	query_runner.execute("""SELECT lb.Branch_Name, COUNT(*) AS Book_Count,
 					  COUNT(CASE WHEN bl.Returned_date IS NOT 'NULL' THEN 1 END) AS Returned_Books, 
@@ -574,17 +577,20 @@ def part2_query7(query_runner):
 					  GROUP BY lb.Branch_Name
 					  """)
 	
+	# Fetch the query results and store it into a variable
 	records = query_runner.fetchall()
 
-	print(records)
+	# For debugging purposes, print all of the records into the terminal
+	# print(records)
 
-	# String Representation Of Data
+	# Names to store string representation of data
 	result_branch_name = ''
 	result_book_count = ''
 	result_returned_books = ''
 	result_still_borrowed_books = ''
 	result_late_books = ''
 
+	# Store each data into a particular string array for displaying into the GUI
 	for record in records:
 		result_branch_name += str(record[0] + "\n")
 		result_book_count += str(str(record[1]) + "\n")
@@ -592,25 +598,55 @@ def part2_query7(query_runner):
 		result_still_borrowed_books += str(str(record[3]) + "\n")
 		result_late_books += str(str(record[4]) + "\n")
 
-	# DEBUG: Prints Attribute Results In Terminal For Testing
-	print(result_branch_name)
-	print()
-	print(result_book_count)
-	print()
-	print(result_returned_books)
-	print()
-	print(result_still_borrowed_books)
-	print()
-	print(result_late_books)
-	print()
+	# For debugging purposes, print each string array into the terminal one at a time
+	# print(result_branch_name)
+	# print()
+	# print(result_book_count)
+	# print()
+	# print(result_returned_books)
+	# print()
+	# print(result_still_borrowed_books)
+	# print()
+	# print(result_late_books)
+	# print()
 	
+	# Return all string arrays back to do_query function to display the grid properly
 	return (result_branch_name, result_book_count, result_returned_books,
 		 result_still_borrowed_books, result_late_books)
 
 # Part 2 - Query 8 Creator: Chime Nguyen
 def part2_query8(query_runner):
+	# List all of the book titles with the maximum number of days that the book has been borrowed for.
+	query_runner.execute("""SELECT b.Title, MAX(CASE WHEN bl.Returned_date = 'NULL' THEN NULL 
+					  ELSE CAST(JULIANDAY(bl.Returned_date) - JULIANDAY(bl.Date_Out) AS INTEGER) END) AS Days_borrowed 
+					  FROM BOOK b JOIN BOOK_LOANS bl ON b.Book_Id = bl.Book_Id 
+					  GROUP BY b.Book_Id 
+					  ORDER BY Days_borrowed DESC
+					  """)
+	
+	# Fetch the query results and store it into a variable
+	records = query_runner.fetchall()
 
-	return
+	# For debugging purposes, print all of the records into the terminal
+	# print(records)
+
+	# Names to store string representation of data
+	result_book_title = ''
+	result_max_days_borrowed = ''
+
+	# Store each data into a particular string array for displaying into the GUI
+	for record in records:
+		result_book_title += str(record[0] + "\n")
+		result_max_days_borrowed += str(str(record[1]) + "\n")
+
+	# For debugging purposes, print each string array into the terminal one at a time
+	# print(result_book_title)
+	# print()
+	# print(result_max_days_borrowed)
+	# print()
+
+	# Return all string arrays back to do_query function to display the grid properly
+	return (result_book_title, result_max_days_borrowed)
 
 # Part 2 - Query 9 Creator: Ivan
 def part2_query9(query_runner):
@@ -737,6 +773,10 @@ def do_query():
 	# Create a new connection dedicated to the queries
 	query_conn = sqlite3.connect('test.db') # Edit this to be the right database name
 
+	# Remove previous results details
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget()
+	
 	# Use this cursor to run the query
 	query_runner = query_conn.cursor()
 
@@ -781,36 +821,50 @@ def do_query():
 		(result_branch_name, result_book_count, result_returned_books,
 		 result_still_borrowed_books, result_late_books) = part2_query7(query_runner)
 		
-		# Created seperate labels for displaying results separately
-		results0a = Label(results_frame, text = "Branch Name")
-		results0b = Label(results_frame, text = "Book Count")
-		results0c = Label(results_frame, text = "Returned Books")
-		results0d = Label(results_frame, text = "Still Borrowed Books")
-		results0e = Label(results_frame, text = "Late Books")
+		# Create seperate labels for displaying results separately
+		results0a = Label(results_frame, text = "Branch Name", justify = "left")
+		results0b = Label(results_frame, text = "Book Count", justify = "left")
+		results0c = Label(results_frame, text = "Returned Books", justify = "left")
+		results0d = Label(results_frame, text = "Still Borrowed Books", justify = "left")
+		results0e = Label(results_frame, text = "Late Books", justify = "left")
 
-		results1 = Label(results_frame, text = result_branch_name)
-		results2 = Label(results_frame, text = result_book_count)
-		results3 = Label(results_frame, text = result_returned_books)
-		results4 = Label(results_frame, text = result_still_borrowed_books)
-		results5 = Label(results_frame, text = result_late_books)
+		results1 = Label(results_frame, text = result_branch_name, justify = "left")
+		results2 = Label(results_frame, text = result_book_count, justify = "left")
+		results3 = Label(results_frame, text = result_returned_books, justify = "left")
+		results4 = Label(results_frame, text = result_still_borrowed_books, justify = "left")
+		results5 = Label(results_frame, text = result_late_books, justify = "left")
 
-		# Added the result labels into the grid and display them properly
+		# Add the results of the query into the grid and display them properly
 		results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 2)
 		results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 2)
 		results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 2)
 		results0d.grid(row = RESULTS_ROW-1, column = 3, padx = 2)
 		results0e.grid(row = RESULTS_ROW-1, column = 4, padx = 2)
 
-		results1.grid(row = RESULTS_ROW, column = 0, sticky = "w")
-		results2.grid(row = RESULTS_ROW, column = 1, sticky = "w")
-		results3.grid(row = RESULTS_ROW, column = 2, sticky = "w")
-		results4.grid(row = RESULTS_ROW, column = 3, sticky = "w")
-		results5.grid(row = RESULTS_ROW, column = 4, sticky = "w")
+		results1.grid(row = RESULTS_ROW, column = 0, padx = 2, sticky = "w")
+		results2.grid(row = RESULTS_ROW, column = 1, padx = 2, sticky = "w")
+		results3.grid(row = RESULTS_ROW, column = 2, padx = 2, sticky = "w")
+		results4.grid(row = RESULTS_ROW, column = 3, padx = 2, sticky = "w")
+		results5.grid(row = RESULTS_ROW, column = 4, padx = 2, sticky = "w")
 
 	elif clicked.get() == query_options[10]:
 		# Do computations for Part 2 - Query 8
-		results_text = part2_query8(query_runner)
-		results_label.config(text = results_text)
+		(result_book_title, result_max_days_borrowed) = part2_query8(query_runner)
+
+		# Create seperate labels for displaying results separately
+		results0a = Label(results_frame, text = "Book Title", justify = "left")
+		results0b = Label(results_frame, text = "Max Days Borrowed", justify = "left")
+
+		results1 = Label(results_frame, text = result_book_title, justify = "left")
+		results2 = Label(results_frame, text = result_max_days_borrowed, justify = "left")
+
+		# Add the results of the query into the grid and display them properly
+		results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
+		results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 22, sticky = "w")
+
+		results1.grid(row = RESULTS_ROW, column = 0, padx = 22, sticky = "w")
+		results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "w")
+
 
 	elif clicked.get() == query_options[11]:
 		# Do computations for Part 2 - Query 9
