@@ -88,6 +88,16 @@ query_options = [
 
 
 
+# BEGIN ================================= Constant Variables ================================= BEGIN
+# Note: There is no such thing as a constant variable in Python, but it is written in ALL CAPS to
+#		signify that the value should not be modified
+PHONE_LENGTH = 12	# Length of phone number (At least in most countries)
+RESULTS_ROW = 500	# The row that displays the results (Can be replaced by using pack in future)
+MAX_COLUMNSPAN = 10	# Length that the column can span across other columns for
+# BEGIN ================================== Dropdown Command ================================== BEGIN
+
+
+
 # BEGIN ================================== Dropdown Command ================================== BEGIN
 # Command for selected dropdown menu, where event checks for changes in dropdown
 # General Dropdown Selection Creator: Chime Nguyen
@@ -125,7 +135,7 @@ def select_from_dropdown(event):
 		# Textbox Labels Location
 		bo_phone_label.grid(row = 4, column = 0)
 		where_label = Label(textfield_frame, text = "Who Are You Updating?")
-		where_label.grid(row = 5, columnspan = 2)
+		where_label.grid(row = 5, columnspan = MAX_COLUMNSPAN)
 		bo_name_label.grid(row = 6, column = 0)
 
 		return
@@ -176,16 +186,18 @@ def select_from_dropdown(event):
 		# Textbox Labels Location
 		
 		return
-	elif clicked.get() == query_options[8]:
+	elif clicked.get() == query_options[8]:		# Part 2 - Query 6
 		# Part 2 - Query 6 - List Borrowers Name Based On Return Date
 		query_select_label.config(text = "Find Borrowers Based On Book's Return Date")
 
 		# Textbox Fields Locations
+		bl_returned_date_entry.grid(row = 4, column = 1)
 
 		# Textbox Labels Location
+		bl_returned_date_label.grid(row = 4, column = 0, sticky = "w")
 		
 		return
-	elif clicked.get() == query_options[9]:
+	elif clicked.get() == query_options[9]:		# Part 2 - Query 7
 		# Part 2 - Query 7 - Report All Branches Book Loan Count
 		query_select_label.config(text = "Create A Report On Each Branch's Book Loan Count")
 
@@ -196,7 +208,7 @@ def select_from_dropdown(event):
 		# May not be necessary due to no VALUES or WHERE clause
 		
 		return
-	elif clicked.get() == query_options[10]:
+	elif clicked.get() == query_options[10]:	# Part 2 - Query 8
 		# Part 2 - Query 8 - List Book Titles With Max Days
 		query_select_label.config(text = "List Books Based On How Long The Book Has Been Checked Out For")
 
@@ -207,7 +219,7 @@ def select_from_dropdown(event):
 		# May not be necessary due to no VALUES or WHERE clause
 		
 		return
-	elif clicked.get() == query_options[11]:
+	elif clicked.get() == query_options[11]:	# Part 2 - Query 9
 		# Part 2 - Query 9 - Report On A Borrower With All Books That Were Checked Out
 		query_select_label.config(text = "Create A Report On A Borrower With All Of Thr Book Loan Details")
 
@@ -216,7 +228,7 @@ def select_from_dropdown(event):
 		# Textbox Labels Location
 		
 		return
-	elif clicked.get() == query_options[12]:
+	elif clicked.get() == query_options[12]:	# Part 2 - Query 10
 		# Part 2 - Query 10 - List Borrowers In Branch Who Borrowed A Book
 		query_select_label.config(text = "List All Borrowers In A Branch Who Borrowed At Least One Book")
 
@@ -225,7 +237,7 @@ def select_from_dropdown(event):
 		# Textbox Labels Location
 		
 		return
-	elif clicked.get() == query_options[15]:
+	elif clicked.get() == query_options[15]:	# Part 3 - Query 1
 		# Part 3 - Query 1 - Add Late Attribute In Book Loan Table
 		query_select_label.config(text = "Add A Value For Late Books To Book Loan Table")
 
@@ -234,7 +246,7 @@ def select_from_dropdown(event):
 		# Textbox Labels Location
 		
 		return
-	elif clicked.get() == query_options[16]:
+	elif clicked.get() == query_options[16]:	# Part 2 - Query 2
 		# Part 3 - Query 2 - Add Late Fee Attribute In Library Branch Table With Set Fees
 		query_select_label.config(text = "Add A Late Fee To The Library Branch Table With Determined Fees")
 
@@ -243,7 +255,7 @@ def select_from_dropdown(event):
 		# Textbox Labels Location
 		
 		return
-	elif clicked.get() == query_options[17]:
+	elif clicked.get() == query_options[17]:	# Part 3 - Query 3
 		# Part 3 - Query 3 - View All Details About A Book Loan
 		query_select_label.config(text = "View All Details About A Book Loan")
 
@@ -270,9 +282,6 @@ dropdown.grid(row = 1)
 # BEGIN ================================== Query  Functions ================================== BEGIN
 # Part 2 - Query 1 Creator: Chime Nguyen
 def part2_query1(query_runner):
-	# Variable for the phone max length
-	phone_length = 12
-
 	# Verify that any of the data being inserted into is not empty or invalid
 	verified = True
 	invalid_message = "The following information is missing/invalid: "
@@ -289,7 +298,7 @@ def part2_query1(query_runner):
 	if not verify_entry:
 		verified = False
 		invalid_message += "Borrower's Phone. "
-	if len(verify_entry) > phone_length:
+	if len(verify_entry) > PHONE_LENGTH:
 		verified = False
 		invalid_message += "Borrower's Phone Is Too Long. "
 
@@ -315,9 +324,6 @@ def part2_query1(query_runner):
 
 # Part 2 - Query 2 Creator: Chime Nguyen
 def part2_query2(query_runner):
-	# Variable for the phone max length
-	phone_length = 12
-	
 	# Verify that any of the data being inserted into is not empty or invalid
 	verified = True
 	invalid_message = "The following information is missing/invalid: "
@@ -325,13 +331,13 @@ def part2_query2(query_runner):
 	if not verify_entry:
 		verified = False
 		invalid_message += "Updated Borrower's Phone. "
-	if len(verify_entry) > phone_length:
+	if len(verify_entry) > PHONE_LENGTH:
 		verified = False
 		invalid_message += "Borrower's Phone Is Too Long. "
 	verify_entry = bo_name_entry.get()
 	if not verify_entry:
 		verified = False
-		invalid_message += "Borrower's Name. "
+		invalid_message != "Borrower's Name. "
 
 	# Return if the inputs are not valid
 	if not verified:
@@ -345,7 +351,7 @@ def part2_query2(query_runner):
 					  })
 
 	# Return a message that the query was successfully inserted into the table.
-	result = "Successfully Updated "+ bo_name_entry.get()+ "'s Phone Number To "+ bo_phone_entry.get()
+	result = "Successfully updated " + bo_name_entry.get() + "'s phone number to " + bo_phone_entry.get() + "."
 
 	# Clear all entries that were used
 	bo_name_entry.delete(0, END)
@@ -362,15 +368,11 @@ def part2_query3(query_runner):
 
 	# Check if the values are valid 
 	if not branch_id_or_name or not num_copies:
-		results_label.config(text = "Please fill in all fields.")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
+		return "Please fill in all fields."
 	try:
 		num_copies = int(num_copies)
 	except ValueError:
-		results_label.config(text = "Number of copies must be an integer.")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
+		return "Number of copies must be an integer."
 	
 	# Check if branch_id_or_name is a number or a string
 	try:
@@ -382,9 +384,7 @@ def part2_query3(query_runner):
 		if branch_id_result:
 			branch_id = branch_id_result[0]
 		else:
-			results_label.config(text = "Branch not found.")
-			results_label.grid(row = 100, column = 0, columnspan = 2)
-			return
+			return "Branch not found."
 	else:
 		branch_id = branch_id_or_name
 
@@ -395,10 +395,7 @@ def part2_query3(query_runner):
 	bc_branch_id_entry.delete(0, END)
 	bc_no_of_copies_entry.delete(0, END)
 
-	results_label.config(text = "Successfully updated book copies.")
-	results_label.grid(row = 100, column = 0, columnspan = 2)
-
-	return
+	return "Successfully updated book copies."
 
 # Part 2 - Query 4a Creator: 
 def part2_query4a(query_runner):
@@ -415,10 +412,38 @@ def part2_query5(query_runner):
 
 	return
 
-# Part 2 - Query 6 Creator: 
+# Part 2 - Query 6 Creator: Chime Nguyen
 def part2_query6(query_runner):
+	# Verify that any of the data being inserted into is not empty or invalid
+	verified = True
+	invalid_message = "The following information is missing/invalid: "
+	verify_entry = bl_returned_date_entry.get()
+	if not verify_entry:
+		verified = False
+		invalid_message += "Return Date. "
 
-	return
+	# Return if the inputs are not valid
+	if not verified:
+		return invalid_message
+	
+	# Select borrower's name based on when they returned their book
+	query_runner.execute("""SELECT DISTINCT bo.Name AS Borrower_Names
+					  FROM BORROWER bo JOIN BOOK_LOANS bl ON bo.Card_No = bl.Card_No
+					  WHERE Returned_date = (:return_date)""",
+					  {
+						  'return_date': bl_returned_date_entry.get()
+					  })
+	
+	records = query_runner.fetchall()
+
+	print(records)
+
+	results = ''
+
+	for record in records:
+		results += str(record[0] + "\n")
+	
+	return results
 
 # Part 2 - Query 7 Creator: 
 def part2_query7(query_runner):
@@ -544,7 +569,7 @@ def do_query():
 	else:
 		results_label.config(text = "")
 
-	results_label.grid(row = 100, column = 0, columnspan = 2)
+	results_label.grid(row = RESULTS_ROW, column = 0, columnspan = MAX_COLUMNSPAN)
 
 	# Commit any changes to the database
 	query_conn.commit()
@@ -552,7 +577,6 @@ def do_query():
 	# Close the connection for the query
 	query_conn.close()
 # END ================================ Complete Queries Command ================================ END
-
 
 
 
@@ -801,7 +825,7 @@ title = Label(root, text = "Library Management System",
 # Start by showing a message to tell the user to select a query
 query_select_label = Label(textfield_frame, text = "Select the query using the dropdown above.")
 # Since the message will always be in a fixed location, we will not need to modify the location
-query_select_label.grid(row = 2, column = 0, columnspan = 2)
+query_select_label.grid(row = 2, column = 0, columnspan = MAX_COLUMNSPAN)
 
 # The results label will display the results of the query in the results frame
 results_label = Label(results_frame)
@@ -857,7 +881,6 @@ bc_no_of_copies_label = Label(textfield_frame, text = "Number Of Copies", width 
 # Not all attributes may be used here
 ba_book_id_label = Label(textfield_frame, text = "Book ID", width = 30)
 ba_author_name_label = Label(textfield_frame, text = "Author's Name", width = 30)
-
 # END ==================================== Attribute Labels ==================================== END
 
 
