@@ -38,7 +38,7 @@ import os
 # BEGIN ================================== Creating Windows ================================== BEGIN
 root = Tk()
 root.title('Library Management System')
-root.geometry("600x400")
+root.geometry("600x600")
 root.minsize(600, 250)
 root.maxsize(600, 800)
 # END ==================================== Creating Windows ==================================== END
@@ -562,12 +562,52 @@ def part2_query6(query_runner):
 	
 	return results
 
-# Part 2 - Query 7 Creator: 
+# Part 2 - Query 7 Creator: Chime Nguyen
 def part2_query7(query_runner):
 
-	return
+	# Count the number of books from all branches, including returned, currently borrowed, and late books
+	query_runner.execute("""SELECT lb.Branch_Name, COUNT(*) AS Book_Count,
+					  COUNT(CASE WHEN bl.Returned_date IS NOT 'NULL' THEN 1 END) AS Returned_Books, 
+					  COUNT(CASE WHEN bl.Returned_date IS 'NULL' THEN 1 END) AS Still_Borrowed_Books, 
+					  COUNT(CASE WHEN bl.Returned_date IS NOT 'NULL' AND bl.Returned_date > bl.Due_Date THEN 1 END) AS Late_Books
+					  FROM LIBRARY_BRANCH lb JOIN BOOK_LOANS bl ON lb.Branch_Id = bl.Branch_Id
+					  GROUP BY lb.Branch_Name
+					  """)
+	
+	records = query_runner.fetchall()
 
-# Part 2 - Query 8 Creator: 
+	print(records)
+
+	# String Representation Of Data
+	result_branch_name = ''
+	result_book_count = ''
+	result_returned_books = ''
+	result_still_borrowed_books = ''
+	result_late_books = ''
+
+	for record in records:
+		result_branch_name += str(record[0] + "\n")
+		result_book_count += str(str(record[1]) + "\n")
+		result_returned_books += str(str(record[2]) + "\n")
+		result_still_borrowed_books += str(str(record[3]) + "\n")
+		result_late_books += str(str(record[4]) + "\n")
+
+	# DEBUG: Prints Attribute Results In Terminal For Testing
+	print(result_branch_name)
+	print()
+	print(result_book_count)
+	print()
+	print(result_returned_books)
+	print()
+	print(result_still_borrowed_books)
+	print()
+	print(result_late_books)
+	print()
+	
+	return (result_branch_name, result_book_count, result_returned_books,
+		 result_still_borrowed_books, result_late_books)
+
+# Part 2 - Query 8 Creator: Chime Nguyen
 def part2_query8(query_runner):
 
 	return
@@ -738,8 +778,34 @@ def do_query():
 
 	elif clicked.get() == query_options[9]:
 		# Do computations for Part 2 - Query 7
-		results_text = part2_query7(query_runner)
-		results_label.config(text = results_text)
+		(result_branch_name, result_book_count, result_returned_books,
+		 result_still_borrowed_books, result_late_books) = part2_query7(query_runner)
+		
+		# Created seperate labels for displaying results separately
+		results0a = Label(results_frame, text = "Branch Name")
+		results0b = Label(results_frame, text = "Book Count")
+		results0c = Label(results_frame, text = "Returned Books")
+		results0d = Label(results_frame, text = "Still Borrowed Books")
+		results0e = Label(results_frame, text = "Late Books")
+
+		results1 = Label(results_frame, text = result_branch_name)
+		results2 = Label(results_frame, text = result_book_count)
+		results3 = Label(results_frame, text = result_returned_books)
+		results4 = Label(results_frame, text = result_still_borrowed_books)
+		results5 = Label(results_frame, text = result_late_books)
+
+		# Added the result labels into the grid and display them properly
+		results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 2)
+		results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 2)
+		results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 2)
+		results0d.grid(row = RESULTS_ROW-1, column = 3, padx = 2)
+		results0e.grid(row = RESULTS_ROW-1, column = 4, padx = 2)
+
+		results1.grid(row = RESULTS_ROW, column = 0, sticky = "w")
+		results2.grid(row = RESULTS_ROW, column = 1, sticky = "w")
+		results3.grid(row = RESULTS_ROW, column = 2, sticky = "w")
+		results4.grid(row = RESULTS_ROW, column = 3, sticky = "w")
+		results5.grid(row = RESULTS_ROW, column = 4, sticky = "w")
 
 	elif clicked.get() == query_options[10]:
 		# Do computations for Part 2 - Query 8
