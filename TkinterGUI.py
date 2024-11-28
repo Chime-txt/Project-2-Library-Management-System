@@ -100,7 +100,7 @@ def select_from_dropdown(event):
 	# Clear query results
 	results_label.config(text = "")
 
-	if clicked.get() == query_options[2]:
+	if clicked.get() == query_options[2]:		# Part 2 - Query 1
 		# Part 2 - Query 1 - Add New Borrower
 		query_select_label.config( text = "Insert New Borrower Into Database")
 
@@ -114,26 +114,37 @@ def select_from_dropdown(event):
 		bo_address_label.grid(row = 5, column = 0, sticky = "w")
 		bo_phone_label.grid(row = 6, column = 0, sticky = "w")
 		return
-	elif clicked.get() == query_options[3]:
+	elif clicked.get() == query_options[3]:		# Part 2 - Query 2
 		# Part 2 - Query 2 - Update Phone Number Of Borrower
 		query_select_label.config(text = "Update A Borrower's Phone Number")
 
 		# Textbox Fields Locations
+		bo_phone_entry.grid(row = 4, column = 1)
+		bo_name_entry.grid(row = 6, column = 1)
 
 		# Textbox Labels Location
+		bo_phone_label.grid(row = 4, column = 0)
+		where_label = Label(textfield_frame, text = "Who Are You Updating?")
+		where_label.grid(row = 5, columnspan = 2)
+		bo_name_label.grid(row = 6, column = 0)
 
 		return
-	elif clicked.get() == query_options[4]:
+	elif clicked.get() == query_options[4]:		# Part 2 - Query 3
 		# Part 2 - Query 3 - Add 1 To Book Copies In A Branch
 		query_select_label.config(text = "Increase Number Of Book Copies In A Branch")
 
 		# Textbox Fields Locations
-		bc_branch_id_entry.grid(row = 4, column = 1)
-		bc_no_of_copies_entry.grid(row = 5, column = 1)
+		bc_branch_id_entry.grid(row = 5, column = 1)
+		bc_no_of_copies_entry.grid(row = 8, column = 1)
 
 		# Textbox Labels Location
 		bc_branch_id_label.grid(row = 4, column = 0, sticky = "w")
-		bc_no_of_copies_label.grid(row = 5, column = 0, sticky = "w")
+		temp_label = Label(textfield_frame, text = "======  OR  ======", justify = "center")
+		temp_label.grid(row = 5, column = 0)
+		lb_branch_name_label.grid(row = 6, column = 0, sticky = "w")
+		spacer_label = Label(textfield_frame, text = "")
+		spacer_label.grid(row = 7)
+		bc_no_of_copies_label.grid(row = 8, column = 0, sticky = "w")
 		
 
 		
@@ -277,10 +288,10 @@ def part2_query1(query_runner):
 	verify_entry = bo_phone_entry.get()
 	if not verify_entry:
 		verified = False
-		invalid_message += "Borrower's Phone."
+		invalid_message += "Borrower's Phone. "
 	if len(verify_entry) > phone_length:
 		verified = False
-		invalid_message += "Borrower's Phone Is Too Long."
+		invalid_message += "Borrower's Phone Is Too Long. "
 
 	# Return if the inputs are not valid
 	if not verified:
@@ -304,10 +315,46 @@ def part2_query1(query_runner):
 
 # Part 2 - Query 2 Creator: Chime Nguyen
 def part2_query2(query_runner):
+	# Variable for the phone max length
+	phone_length = 12
+	
+	# Verify that any of the data being inserted into is not empty or invalid
+	verified = True
+	invalid_message = "The following information is missing/invalid: "
+	verify_entry = bo_phone_entry.get()
+	if not verify_entry:
+		verified = False
+		invalid_message += "Updated Borrower's Phone. "
+	if len(verify_entry) > phone_length:
+		verified = False
+		invalid_message += "Borrower's Phone Is Too Long. "
+	verify_entry = bo_name_entry.get()
+	if not verify_entry:
+		verified = False
+		invalid_message += "Borrower's Name. "
 
-	return
+	# Return if the inputs are not valid
+	if not verified:
+		return invalid_message
+	
+	# Insert the filled in data into the database after verifying that the data is valid
+	query_runner.execute("UPDATE BORROWER SET Phone = (:phone) WHERE Name = (:name)",
+					  {
+						  'phone': bo_phone_entry.get(),
+						  'name': bo_name_entry.get()
+					  })
 
-# Part 2 - Query 3 Creator: 
+	# Return a message that the query was successfully inserted into the table.
+	result = "Successfully Updated "+ bo_name_entry.get()+ "'s Phone Number To "+ bo_phone_entry.get()
+
+	# Clear all entries that were used
+	bo_name_entry.delete(0, END)
+	bo_phone_entry.delete(0, END)
+
+	# Return the result
+	return result
+
+# Part 2 - Query 3 Creator: Trung Nguyen
 def part2_query3(query_runner):
 	# Get input values
 	branch_id_or_name = bc_branch_id_entry.get()
