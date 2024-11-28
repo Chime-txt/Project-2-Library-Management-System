@@ -219,25 +219,27 @@ def select_from_dropdown(event):
 		# May not be necessary due to no VALUES or WHERE clause
 		
 		return
-	elif clicked.get() == query_options[11]:	# Part 2 - Query 9
+	elif clicked.get() == query_options[11]:
 		# Part 2 - Query 9 - Report On A Borrower With All Books That Were Checked Out
 		query_select_label.config(text = "Create A Report On A Borrower With All Of Thr Book Loan Details")
 
 		# Textbox Fields Locations
-
+		bo_name_entry.grid(row = 4, column = 1)
 		# Textbox Labels Location
-		
+		bo_name_label.grid(row = 4, column = 0, sticky = "w")
+
 		return
-	elif clicked.get() == query_options[12]:	# Part 2 - Query 10
+	elif clicked.get() == query_options[12]:
 		# Part 2 - Query 10 - List Borrowers In Branch Who Borrowed A Book
 		query_select_label.config(text = "List All Borrowers In A Branch Who Borrowed At Least One Book")
 
 		# Textbox Fields Locations
-
+		lb_branch_name_entry.grid(row = 4, column = 1)
 		# Textbox Labels Location
+		lb_branch_name_label.grid(row = 4, column = 0, sticky = "w")
 		
 		return
-	elif clicked.get() == query_options[15]:	# Part 3 - Query 1
+	elif clicked.get() == query_options[15]:
 		# Part 3 - Query 1 - Add Late Attribute In Book Loan Table
 		query_select_label.config(text = "Add A Value For Late Books To Book Loan Table")
 
@@ -246,7 +248,7 @@ def select_from_dropdown(event):
 		# Textbox Labels Location
 		
 		return
-	elif clicked.get() == query_options[16]:	# Part 2 - Query 2
+	elif clicked.get() == query_options[16]:
 		# Part 3 - Query 2 - Add Late Fee Attribute In Library Branch Table With Set Fees
 		query_select_label.config(text = "Add A Late Fee To The Library Branch Table With Determined Fees")
 
@@ -455,25 +457,113 @@ def part2_query8(query_runner):
 
 	return
 
-# Part 2 - Query 9 Creator: 
+# Part 2 - Query 9 Creator: Ivan
 def part2_query9(query_runner):
+	verified = True
+	invalid_message = "The following information is missing/invalid: "
+	verify_entry = bo_name_entry.get()
+	if not verify_entry:
+		verified = False
+		invalid_message += "Borrower's Name. "
 
-	return
+	if not verified:
+		return invalid_message
+	
+	query_runner.execute("""
+						SELECT bo.Name, b.Title, ba.Author_Name AS Author, bl.Date_Out, 
+    						CASE WHEN bl.Returned_date IS NOT 'NULL' THEN
+        						CAST(JULIANDAY(bl.Returned_date) - JULIANDAY(bl.Date_Out) AS INTEGER)
+        						ELSE 'NULL'
+    						END AS Days_borrowed,
+    						CASE
+        						WHEN bl.Returned_date IS 'NULL' THEN 'Not Returned'
+        						WHEN bl.Returned_date IS NOT 'NULL' AND JULIANDAY(bl.Returned_date) > JULIANDAY(bl.Due_Date)
+        						THEN 'Late' ELSE 'On Time'
+    						END AS Return_Status
+						FROM BOOK b JOIN BOOK_LOANS bl ON b.Book_Id = bl.Book_Id
+            						JOIN BORROWER bo ON bl.Card_No = bo.Card_No
+            						JOIN BOOK_AUTHORS ba ON b.Book_Id = ba.Book_Id
+						WHERE bo.Name = (:name)
+						ORDER BY Date_Out DESC;
+						""", {'name': bo_name_entry.get()})
+	
+	records = query_runner.fetchall()
+	print(records)
 
-# Part 2 - Query 10 Creator: 
+
+
+	return "Successfully executed query 9"
+
+# Part 2 - Query 10 Creator: Ivan
 def part2_query10(query_runner):
+	verified = True
+	invalid_message = "The following information is missing/invalid: "
+	verify_entry = lb_branch_name_entry.get()
+	if not verify_entry:
+		verified = False
+		invalid_message += "Branch name. "
 
-	return
+	if not verified:
+		return invalid_message
+	
+	query_runner.execute("""
+						SELECT DISTINCT bo.Name, bo.Address, lb.Branch_Name
+						FROM BORROWER bo JOIN BOOK_LOANS bl ON bo.Card_No = bl.Card_No
+                 						 JOIN LIBRARY_BRANCH lb ON bl.Branch_Id = lb.Branch_Id
+						WHERE lb.Branch_Name = (:branch_name);
+					  	""", {'branch_name': lb_branch_name_entry.get()})
+	
+	records = query_runner.fetchall()
+	print(records)
 
-# Part 3 - Query 1 Creator: 
-def part3_query1(query_runner):
 
-	return
 
-# Part 3 - Query 2 Creator: 
-def part3_query2(query_runner):
+	return "Successfully executed query 10"
 
-	return
+# Part 3 - Query 1 Creator: Ivan
+def part3_query1():
+	query_conn = sqlite3.connect('test.db')
+	query_runner = query_conn.cursor()
+
+	query_runner.execute("ALTER TABLE BOOK_LOANS ADD COLUMN Late INTEGER;")
+	query_runner.execute("""
+						UPDATE BOOK_LOANS
+						SET Late = (
+    						CASE
+        						WHEN CAST(JULIANDAY(Returned_date) > JULIANDAY(Due_Date) AS INTEGER) THEN 1
+        						WHEN CAST(JULIANDAY(Returned_date) <= JULIANDAY(Due_Date) AS INTEGER) THEN 0
+        						ELSE 0
+    						END
+    						);
+					  	""")
+	
+	query_conn.commit()
+	query_conn.close()
+
+	return "Successfully executed query 3.1"
+
+# Part 3 - Query 2 Creator: Ivan
+def part3_query2():
+	query_conn = sqlite3.connect('test.db')
+	query_runner = query_conn.cursor()
+
+	query_runner.execute("ALTER TABLE LIBRARY_BRANCH ADD COLUMN LateFee FLOAT DEFAULT 0.00;")
+	query_runner.execute("""
+						UPDATE LIBRARY_BRANCH
+						SET LateFee = (
+    						CASE
+        						WHEN Branch_Name = 'Main Branch' THEN 100.00
+        						WHEN Branch_Name = 'West Branch' THEN 50.00
+        						WHEN Branch_Name = 'East Branch' THEN 10.00
+        						ELSE 420.69
+    						END
+    						);
+					  	""")
+
+	query_conn.commit()
+	query_conn.close()
+
+	return "Successfully executed query 3.2"
 
 # Part 3 - Query 3 Creator: 
 def part3_query3(query_runner):
@@ -553,12 +643,12 @@ def do_query():
 
 	elif clicked.get() == query_options[15]:
 		# Do computations for Part 3 - Query 1
-		results_text = part3_query1(query_runner)
+		results_text = part3_query1()
 		results_label.config(text = results_text)
 
 	elif clicked.get() == query_options[16]:
 		# Do computations for Part 3 - Query 2
-		results_text = part3_query2(query_runner)
+		results_text = part3_query2()
 		results_label.config(text = results_text)
 
 	elif clicked.get() == query_options[17]:
