@@ -89,7 +89,9 @@ query_options = [
 	"Add new Book to All Branches",		# query_options[24]
 	"Check copies Loaned",				# query_options[25]
 	"Check for Late Returns",			# query_options[26]
-	"View Info on a Book Loan"			# query_options[27]
+	"Generalized Info of Book Loans",	# query_options[27]
+	"View Book Loan via Borrower",		# query_options[28]
+	"View Book Loan via Book"			# query_options[29]
 
 ]
 # END ==================================== Dropdown Options ==================================== END
@@ -328,25 +330,42 @@ def select_from_dropdown(event):
 		# and author information to all 5 branches with 5 copies for each branch. [5 points]
 
 		# Textbox Fields Locations
+		b_title_entry.grid(row = 4, column = 1)
+		ba_author_name_entry.grid(row = 5, column = 1)
+		b_publisher_name_entry.grid(row = 6, column = 1)
 
 		# Textbox Labels Location
+		b_title_label.grid(row = 4, column = 0, sticky = "w")
+		ba_author_name_label.grid(row = 5, column = 0, sticky = "w")
+		b_publisher_name_label.grid(row = 6, column = 0, sticky = "w")
 
 		return
 	elif clicked.get() == query_options[25]: 	# Check copies Loaned (Requirement 4)
 		# Part 3 - Requirement 4 - Given a book title list the number of copies loaned out per branch. [5 points]
+		query_select_label.config(text = "Check copies Loaned")
 
 		# Textbox Fields Locations
+		b_title_entry.grid(row = 4, column = 1)
 
 		# Textbox Labels Location
+		b_title_label.grid(row = 4, column = 0, sticky = "w")
 
 		return
 	elif clicked.get() == query_options[26]: 	# Check for Late Returns (Requirement 5)
 		# Part 3 - Requirement 5 - Given any due date range list the Book_loans that were returned late 
 		# and how many days they were late [8 points]
+		query_select_label.config(text = "Check for Late Returns")
 		
 		# Textbox Fields Locations
+		bl_date_out_start_entry.grid(row = 4, column = 1)
+		bl_date_out_end_entry.grid(row = 5, column = 1)
 
 		# Textbox Labels Location
+		bl_date_out_start_label = Label(textfield_frame, text = "Start Date (YYYY-MM-DD)")
+		bl_date_out_start_label.grid(row = 4, column = 0, sticky = "w")
+	
+		bl_date_out_end_label = Label(textfield_frame, text = "End Date (YYYY-MM-DD)")
+		bl_date_out_end_label.grid(row = 5, column = 0, sticky = "w")
 
 		return
 	elif clicked.get() == query_options[27]: 	# View Info on a Book Loan (Requirement 6)
@@ -364,15 +383,61 @@ def select_from_dropdown(event):
 		# For books that they do not have any late fee amount, you need to substitute NULL value with 'Non-Appliable' text
 		# Make sure that the query returns meaningful attribute names
 		# In the case that the user decides not to provide any filters, order the results based on highest late fee remaining.
+		query_select_label.config(text = "View Info on a Book Loan\n You may leave entires blank.")
 
 		# Textbox Fields Locations
+		bl_card_no_entry.grid(row = 4, column = 1)
+		bo_name_entry.grid(row = 5, column = 1)
+		b_book_id_entry.grid(row = 6, column = 1)
+		b_title_entry.grid(row = 7, column = 1)
 
 		# Textbox Labels Location
+		bl_card_no_label.grid(row = 4, column = 0, sticky = "w")
+		bo_name_label.grid(row = 5, column = 0, sticky = "w")
+		b_book_id_label.grid(row = 6, column = 0, sticky = "w")
+		b_title_label.grid(row = 7, column = 0, sticky = "w")
 
 		return
 	
+	elif clicked.get() == query_options[28]: 	# View Book Loan via Borrower (Requirement 6a)
+		# List for every borrower the ID, name, and if there is any lateFee balance.
+		# The user has the right to search either by a borrower ID, name, part of the name or run query with no filters/criteria.
+		# Amount needs to be in US dollars. For borrrowers with zero(0) or NULL balanace, you need to return zero dollars ($0.00)
+		# Make sure that the query returns meaningful attribute names.
+		# In the case that the user decides not to provide any filters, order the results based on balance amount. 
+		# Make sure you return all records 
+		query_select_label.config(text = "View Book Loan via Borrower\n You may leave entires blank.")
 
+		# Textbox Fields Locations
+		bl_card_no_entry.grid(row = 4, column = 1)
+		bo_name_entry.grid(row = 5, column = 1)
 
+		# Textbox Labels Location
+		bl_card_no_label.grid(row = 4, column = 0, sticky = "w")
+		bo_name_label.grid(row = 5, column = 0, sticky = "w")
+	
+		return
+	
+	elif clicked.get() == query_options[29]: 	# View Book Loan via Book (Requirement 6b)
+		# List book information in the view. user must search with borrowerID and any of the following search items:
+		# book id, book title, part of book title, or run query with no filters/criteria
+		# The late fee amount needs to be in US dollars. The late fee price amount needs to have two decimals as well as $ sign
+		# For books that they do not have any late fee amount, you need to substitute NULL value with 'Non-Appliable' text
+		# Make sure that the query returns meaningful attribute names
+		# In the case that the user decides not to provide any filters, order the results based on highest late fee remaining.
+		query_select_label.config(text = "View Book Loan via Book\n You may leave entires blank.")
+
+		# Textbox Fields Locations
+		bl_card_no_entry.grid(row = 4, column = 1)
+		b_book_id_entry.grid(row = 5, column = 1)
+		b_title_entry.grid(row = 6, column = 1)
+
+		# Textbox Labels Location
+		bl_card_no_label.grid(row = 4, column = 0, sticky = "w")
+		b_book_id_label.grid(row = 5, column = 0, sticky = "w")
+		b_title_label.grid(row = 6, column = 0, sticky = "w")
+
+		return		
 
 
 	else:
@@ -979,7 +1044,7 @@ def requirement1(query_runner):
 		print ("Branch Name")
 	
 
-	# Determin if book_id is ID or Title
+	# Determine if book_id is ID or Title
 	try:
 		# try to convert book_id to an integer
 		book_id = int(book_id_or_name)
@@ -1042,24 +1107,24 @@ def requirement1(query_runner):
 			
 			branch_id_to_use = result[0]
 
-	# Create the trigger if it does not exists and have it run after update
-	# https://www.sqlitetutorial.net/sqlite-trigger/
+		# Create the trigger if it does not exists and have it run after update
+		# https://www.sqlitetutorial.net/sqlite-trigger/
 
-	# Do the checkout now that you have bookid and branchid
-	query_runner.execute("""
+		# Do the checkout now that you have bookid and branchid
+		query_runner.execute("""
 		INSERT INTO BOOK_LOANS(Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date)
 		VALUES (?, ?, ?, CURRENT_DATE, DATE(CURRENT_DATE, '+1 month'), 'NULL');
 		""", (book_id_to_use, branch_id_to_use, card_no))
 		
-	# Trigger should runautomatically if you did after update trigger
+		# Trigger should runautomatically if you did after update trigger
 		
-	# You will need to perform a select query to show the updated table output of book_copies
+		# You will need to perform a select query to show the updated table output of book_copies
 
-	# Since you need to retrieve the data separately to display them correctly, here is the code you can uncomment
-	# for record in records:
-		# result_book_id += str(str(record[0]) + "\n")
-		# result_branch_id += str(str(record[1]) + "\n")
-		# result_noof_copies += str(str(record[2]) + "\n")
+		# Since you need to retrieve the data separately to display them correctly, here is the code you can uncomment
+		# for record in records:
+			# result_book_id += str(str(record[0]) + "\n")
+			# result_branch_id += str(str(record[1]) + "\n")
+			# result_noof_copies += str(str(record[2]) + "\n")
 
 	# This part should be "removed" since the select query is doing the action
 	results_label.config(text = "Book checked out successfully.")
@@ -1081,26 +1146,505 @@ def requirement2(query_runner):
 
 # Requirement 3 - Add new Book to All Branches
 def requirement3(query_runner):
+	# Get input values
+	book_title = b_title_entry.get()
+	publisher_name = b_publisher_name_entry.get()
+	author_name = ba_author_name_entry.get()
+
+	# Check if the values are valid
+	if not book_title or not publisher_name or not author_name:
+		results_label.config(text = "Please fill in all fields.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
 	
+	# Insert Publisher if it doesn't exist in the database
+	query_runner.execute("INSERT OR IGNORE INTO PUBLISHER (Publisher_Name) VALUES (?)", (publisher_name,))
+
+	# Insert Book
+	query_runner.execute("INSERT INTO BOOK (Title, Publisher_name) VALUES (?, ?)", (book_title, publisher_name))
+	
+	# Get the Book_Id of the book that was just inserted
+	query_runner.execute("SELECT Book_Id FROM BOOK WHERE Title = ? AND Publisher_name = ?", (book_title, publisher_name))
+	book_id = query_runner.fetchone()[0]
+
+	# Insert Author
+	query_runner.execute("INSERT INTO BOOK_AUTHORS (Book_Id, Author_Name) VALUES (?, ?)", (book_id, author_name))
+
+	# Get all branch ids
+	query_runner.execute("SELECT Branch_Id FROM LIBRARY_BRANCH;")
+	branch_ids = query_runner.fetchall()
+
+	# Insert the book into all branches
+	for branch_id in branch_ids:
+		query_runner.execute("INSERT INTO BOOK_COPIES (Book_Id, Branch_Id, No_Of_Copies) VALUES (?, ?, ?);", (book_id, branch_id[0], 5))
+	
+	# Clear the entries
+	b_title_entry.delete(0, END)
+	b_publisher_name_entry.delete(0, END)
+	ba_author_name_entry.delete(0, END)
+
+	results_label.config(text = "Successfully added new book to all branches.")
+	results_label.grid(row = 100, column = 0, columnspan = 2)
+
 
 	return
 
 # Requirement 4 - Check copies Loaned
 def requirement4(query_runner):
+	# Get input values
+	book_title = b_title_entry.get()
+
+	# Check if the value are valid
+	if not book_title:
+		results_label.config(text = "Please fill in all fields.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	
+	# clear previous results
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
+
+	# Check if book_title is ID or title
+	try:
+		# try to convert book_id to an integer
+		book_id = int(book_title)
+		is_book_id = True
+	except ValueError:
+		# if it fails, assume it's a title
+		is_book_id = False
+
+	if is_book_id:
+		# If it's an ID, use it directly in query
+		query_runner.execute("""
+					   SELECT LB.Branch_Name, COUNT(BL.Book_Id) AS Copies_Loaned
+					   FROM BOOK_LOANS BL JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+					   WHERE BL.Book_Id = ? AND BL.Date_Out IS NOT 'NULL'
+					   GROUP BY LB.Branch_Name;
+					   """, (book_id,))
+	else:
+		# If it's a title, get its ID
+		query_runner.execute("SELECT Book_Id FROM BOOK WHERE Title = ?;", (book_title,))
+		book_id = query_runner.fetchone()
+
+		if book_id is None:
+			results_label.config(text = "Book not found.")
+			results_label.grid(row = 100, column = 0, columnspan = 2)
+			return
+		
+		book_id = book_id[0]
+
+		# Execute query to get the number of copies loaned per branch
+		query_runner.execute("""
+			SELECT LB.Branch_Name, COUNT(BL.Book_Id) AS Copies_Loaned
+			FROM BOOK_LOANS BL JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+			WHERE BL.Book_Id = ? AND BL.Date_Out IS NOT 'NULL'
+			GROUP BY LB.Branch_Name;
+			""", (book_id,))
+
+	# Get the results
+	results = query_runner.fetchall()
+
+	# Display the results
+	branch_name = ''
+	copies_loaned = ''
+	result_branch_name = Label(results_frame, text = "Branch Name\n______________________")
+	result_copies_loaned = Label(results_frame, text = "Copies Loaned\n______________________")
+
+	for row in results:
+		branch_name += str(row[0] + "\n")
+		copies_loaned += str(row[1]) + "\n"
+
+	# Create labels for each array of
+	result_label1 = Label(results_frame, text = branch_name)
+	result_label2 = Label(results_frame, text = copies_loaned)
+
+	# Display the results using the grid and differing columns
+	result_branch_name.grid(row = 99, column = 0)
+	result_copies_loaned.grid(row = 99, column = 1)
+	result_label1.grid(row = 100, column = 0)
+	result_label2.grid(row = 100, column = 1)
+
+	# Clear the entries
+	b_title_entry.delete(0, END)
 	
 
 	return
 
 # Requirement 5 - Check for Late Returns
 def requirement5(query_runner):
+	start_due_date = bl_date_out_start_entry.get()
+	end_due_date = bl_date_out_end_entry.get()
+
+	if not start_due_date or not end_due_date:
+		results_label.config(text = "Please fill in all fields.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
 	
+	# Clear previous results
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
+
+	# Execute the query
+	query_runner.execute("""
+					  SELECT B.Title, LB.Branch_Name, BL.Card_no,
+					  	CASE WHEN BL.Returned_date IS NOT 'NULL' THEN
+					  		CAST(JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date) AS INTEGER)
+					  		ELSE CAST(JULIANDAY(CURRENT_DATE) - JULIANDAY(BL.Due_Date) AS INTEGER)
+					  	END AS Days_Late
+					  FROM BOOK_LOANS BL JOIN BOOK B ON BL.Book_Id = B.Book_Id
+					  	JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+					  WHERE BL.Due_Date BETWEEN ? AND ?
+						AND (BL.Returned_date IS 'NULL' OR CAST(JULIANDAY(BL.Returned_date) > JULIANDAY(BL.Due_Date) AS INTEGER) > 0)
+					  ORDER BY B.Title, LB.Branch_Name;
+					  """, (start_due_date, end_due_date))
+	
+	# Get the results
+	result = query_runner.fetchall()
+
+	# Display the results
+	title = ''
+	branch_name = ''
+	card_no = ''
+	days_late = ''
+	result_title = Label(results_frame, text = "Title\n______________________")
+	result_branch_name = Label(results_frame, text = "Branch Name\n______________________")
+	result_card_no = Label(results_frame, text = "Card No\n______________________")
+	result_days_late = Label(results_frame, text = "Days Late\n______________________")
+	for row in result:
+		title += str(row[0] + "\n")
+		branch_name += str(row[1] + "\n")
+		card_no += str(row[2]) + "\n"
+		days_late += str(row[3]) + "\n"
+
+	# Create labels for each array of
+	result_label1 = Label(results_frame, text = title)
+	result_label2 = Label(results_frame, text = branch_name)
+	result_label3 = Label(results_frame, text = card_no)
+	result_label4 = Label(results_frame, text = days_late)
+	
+	# Display the results using the grid and differing columns
+	result_title.grid(row = 99, column = 0)
+	result_branch_name.grid(row = 99, column = 1)
+	result_card_no.grid(row = 99, column = 2)
+	result_days_late.grid(row = 99, column = 3)
+	result_label1.grid(row = 100, column = 0)
+	result_label2.grid(row = 100, column = 1)
+	result_label3.grid(row = 100, column = 2)
+	result_label4.grid(row = 100, column = 3)
+
+	# Clear the entries
+	bl_date_out_start_entry.delete(0, END)
+	bl_date_out_end_entry.delete(0, END)
+	
+
 
 	return
 
 # Requirement 6 - View Info on a Book Loan
 def requirement6(query_runner):
+	# Get input values
+	card_no = bl_card_no_entry.get()
+	borrower_name = bo_name_entry.get()
+	book_id = b_book_id_entry.get()
+	book_title = b_title_entry.get()
+
+	# Clear previous results
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
+
+	# Query based on input criteria
+	query = """
+		SELECT BOR.Card_No AS Borrower_ID,
+			BOR.Name as Borrower_Name,
+			B.Title as Book_Title,
+			BL.Book_Id as Book_ID,
+			CASE
+				WHEN BL.Returned_Date IS 'NULL' THEN 'Non-Applicable'
+				WHEN JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date) > 0 THEN
+				  '$' || ROUND((JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date)) * LB.LateFee, 2)
+				ELSE 'Non-Applicable'
+			END AS Late_Fee_Ammount
+		FROM BORROWER BOR
+			JOIN BOOK_LOANS BL ON BOR.Card_No = BL.Card_No
+			JOIN BOOK B ON BL.Book_Id = B.Book_Id
+			JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+	"""
+	conditions = []
+	params = []
+
+	if card_no:
+		conditions.append("BOR.Card_No = ?")
+		params.append(card_no)
+	
+	if book_id:
+		try:
+			book_id = int(book_id)
+			conditions.append("BL.Book_Id = ?")
+			params.append(book_id)
+		except ValueError:
+			results_label.config(text = "Invalid Book ID.")
+			results_label.grid(row = 100, column = 0, columnspan = 2)
+			return
+	
+	if book_title:
+		conditions.append("B.Title LIKE ?")
+		params.append(f"%{book_title}%")
+
+	if borrower_name: 
+		conditions.append("BOR.Name LIKE ?")
+		params.append(f"%{borrower_name}%")
+
+	# Add the conditions to the query
+	if conditions:
+		query += " WHERE " + " AND ".join(conditions)
+
+	# Order by late fee amount
+	query += " ORDER BY Late_Fee_Ammount DESC;"
+	 
+	# Execute the query
+	query_runner.execute(query, params)
+
+	# Get the results
+	results = query_runner.fetchall()
+
+	# Display the results
+	borrower_id = ''
+	borrower_name = ''
+	book_title = ''
+	book_id = ''
+	late_fee_amount = ''
+	result_borrower_id = Label(results_frame, text = "Borrower ID\n______________________")
+	result_borrower_name = Label(results_frame, text = "Borrower Name\n______________________")
+	result_book_title = Label(results_frame, text = "Book Title\n______________________")
+	result_book_id = Label(results_frame, text = "Book ID\n______________________")
+	result_late_fee_amount = Label(results_frame, text = "Late Fee Amount\n______________________")
+
+	for row in results:
+		borrower_id += str(row[0]) + "\n"
+		borrower_name += str(row[1] + "\n")
+		book_title += str(row[2] + "\n")
+		book_id += str(row[3]) + "\n"
+		late_fee_amount += str(row[4]) + "\n"
+		
+	# Create labels for each array of
+	result_label1 = Label(results_frame, text = borrower_id)
+	result_label2 = Label(results_frame, text = borrower_name)
+	result_label3 = Label(results_frame, text = book_title)
+	result_label4 = Label(results_frame, text = book_id)
+	result_label5 = Label(results_frame, text = late_fee_amount)
+
+	# Display the results using the grid and differing columns
+	result_borrower_id.grid(row = 99, column = 0)
+	result_borrower_name.grid(row = 99, column = 1)
+	result_book_title.grid(row = 99, column = 2)
+	result_book_id.grid(row = 99, column = 3)
+	result_late_fee_amount.grid(row = 99, column = 4)
+	result_label1.grid(row = 100, column = 0)
+	result_label2.grid(row = 100, column = 1)
+	result_label3.grid(row = 100, column = 2)
+	result_label4.grid(row = 100, column = 3)
+	result_label5.grid(row = 100, column = 4)
+
+	# Clear the entries
+	bl_card_no_entry.delete(0, END)
+	b_book_id_entry.delete(0, END)
+	b_title_entry.delete(0, END)
+	bo_name_entry.delete(0, END)
 
 
+	return
+
+def requirement6a(query_runner):
+	# Get input values
+	card_no = bl_card_no_entry.get()
+	borrower_name = bo_name_entry.get()
+
+	# Clear previous results
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
+
+	# Query to retrieve borrowers and late fees
+	query = """
+		SELECT BOR.Card_No AS Borrower_ID,
+			BOR.Name AS Borrower_Name,
+			CASE WHEN BL.Returned_Date IS 'NULL' 
+					THEN CAST(JULIANDAY(CURRENT_DATE) - JULIANDAY(BL.Due_Date) AS INTEGER)
+				WHEN JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date) > 0 
+					THEN CAST(JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date) AS INTEGER)
+				ELSE 0 
+			END AS Days_Late,
+			ROUND(SUM(CASE WHEN BL.Returned_Date IS 'NULL' 
+					THEN (JULIANDAY(CURRENT_DATE) - JULIANDAY(BL.Due_Date)) * LB.LateFee -- Books not returned
+				WHEN JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date) > 0 
+					THEN (JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date)) * LB.LateFee -- For late books
+				ELSE 0 -- For books returned on time
+			END), 2) AS Total_Fee_Balance
+		FROM BORROWER BOR
+			JOIN BOOK_LOANS BL ON BOR.Card_No = BL.Card_No
+			JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+	
+		"""
+	# Additional conditions and parameters for the query
+	conditions = []
+	params = []
+
+	# Add conditions based on input values
+	if card_no:
+		conditions.append("BOR.Card_No = ?")
+		params.append(card_no)
+
+	# Borrower names that are LIKE the input value
+	if borrower_name:
+		conditions.append("BOR.Name LIKE ?")
+		params.append(f"%{borrower_name}%")
+	
+	# Add the conditions to the query
+	if conditions:
+		query += " WHERE " + " AND ".join(conditions)
+
+	# Group by borrower and order by total fee balance
+	query += " GROUP BY BOR.Card_No, BOR.Name ORDER BY Total_Fee_Balance DESC;"
+
+	# Execute the query
+	query_runner.execute(query, params)
+
+	# Get the results
+	results = query_runner.fetchall()
+
+	# Display the results
+	borrower_id = ''
+	borrower_name_displayed = ''
+	days_late_displayed = ''
+	total_fee_balance = ''
+
+	result_borrower_id = Label(results_frame, text = "Borrower ID\n______________________")
+	result_borrower_name = Label(results_frame, text = "Borrower Name\n______________________")
+	result_days_late = Label(results_frame, text = "Days Late\n______________________")
+	result_total_fee_balance = Label(results_frame, text = "Total Fee Balance\n______________________")
+
+	for row in results:
+		borrower_id += str(row[0]) + "\n"
+		borrower_name_displayed += str(row[1]) + "\n"
+		days_late_displayed += str(row[2]) + "\n"
+		total_fee_balance += f"${row[3]:.2f}\n" if row[3] > 0 else "$0.00\n"
+
+	# Create labels for each array of results
+	result_label1 = Label(results_frame, text = borrower_id)
+	result_label2 = Label(results_frame, text = borrower_name_displayed)
+	result_label3 = Label(results_frame, text = days_late_displayed)
+	result_label4 = Label(results_frame, text = total_fee_balance)
+
+	# Display the results using the grid and differing columns
+	result_borrower_id.grid(row = 99, column = 0)
+	result_borrower_name.grid(row = 99, column = 1)
+	result_days_late.grid(row = 99, column = 2)
+	result_total_fee_balance.grid(row = 99, column = 3)
+	result_label1.grid(row = 100, column = 0)
+	result_label2.grid(row = 100, column = 1)
+	result_label3.grid(row = 100, column = 2)
+	result_label4.grid(row = 100, column = 3)
+	
+	# Clear the entries
+	bl_card_no_entry.delete(0, END)
+	bo_name_entry.delete(0, END)
+
+	return
+
+def requirement6b(query_runner):
+	# Get input values
+	card_no = bl_card_no_entry.get()
+	book_id = b_book_id_entry.get()
+	book_title = b_title_entry.get()
+
+	# Clear previous results
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
+
+	# Query to retrieve books and late fees
+	query = """
+		SELECT B.Title AS Book_Title,
+			BL.Book_Id AS Book_ID,
+			CASE WHEN BL.Returned_Date IS 'NULL' 
+					THEN '$' || ROUND((JULIANDAY(CURRENT_DATE) - JULIANDAY(BL.Due_Date)) * LB.LateFee, 2)
+				WHEN JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date) > 0 
+					THEN '$' || ROUND((JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date)) * LB.LateFee, 2)
+				ELSE 'Non-Applicable'
+			END AS Late_Fee_Amount
+		FROM BOOK B
+			JOIN BOOK_LOANS BL ON B.Book_Id = BL.Book_Id
+			JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id
+		
+	"""
+
+	# Additional conditions and parameters for the query
+	params = []
+
+	if card_no:
+		query += " WHERE BL.Card_No = ?"
+		params.append(card_no)
+
+	if book_id:
+		try:
+			book_id = int(book_id)
+			query += " AND BL.Book_Id = ?"
+			params.append(book_id)
+		except ValueError:
+			results_label.config(text = "Invalid Book ID.")
+			results_label.grid(row = 100, column = 0, columnspan = 2)
+			return
+		
+	if book_title:
+		query += " AND B.Title LIKE ?"
+		params.append(f"%{book_title}%")
+
+
+	# Order by late fee amount
+	query += """
+		ORDER BY 
+			CASE 
+				WHEN Late_Fee_Amount = 'Non-Applicable' THEN 0 
+			END, 
+			CAST(SUBSTR(Late_Fee_Amount, 2) AS FLOAT) DESC; -- Gets the substring starting from index 2 the orders it
+	"""
+
+	# Execute the query
+	query_runner.execute(query, params)
+
+	# Get the results
+	results = query_runner.fetchall()
+
+	# Display the results
+	book_title_displayed = ''
+	book_id_displayed = ''
+	late_fee_amount = ''
+
+	result_book_title = Label(results_frame, text = "Book Title\n______________________")
+	result_book_id = Label(results_frame, text = "Book ID\n______________________")
+	result_late_fee_amount = Label(results_frame, text = "Late Fee Amount\n______________________")
+
+	for row in results:
+		book_title_displayed += str(row[0]) + "\n"
+		book_id_displayed += str(row[1]) + "\n"
+		late_fee_amount += str(row[2]) + "\n"
+
+	# Create labels for each array of results
+	result_label1 = Label(results_frame, text = book_title_displayed)
+	result_label2 = Label(results_frame, text = book_id_displayed)
+	result_label3 = Label(results_frame, text = late_fee_amount)
+
+	# Display the results using the grid and differing columns
+	result_book_title.grid(row = 99, column = 0)
+	result_book_id.grid(row = 99, column = 1)
+	result_late_fee_amount.grid(row = 99, column = 2)
+	result_label1.grid(row = 100, column = 0)
+	result_label2.grid(row = 100, column = 1)
+	result_label3.grid(row = 100, column = 2)
+
+	# Clear the entries
+	b_book_id_entry.delete(0, END)
+	b_title_entry.delete(0, END)
+
+	
 	return
 	
 # END ==================================== Query  Functions ==================================== END
@@ -1260,8 +1804,18 @@ def do_query():
 		results_label.config(text = results_text)
 
 	elif clicked.get() == query_options[27]:
-		# Do computations for Requirement 6
+		# Do computations for GENERALIZED Requirement 6
 		results_text = requirement6(query_runner)
+		results_label.config(text = results_text)
+
+	elif clicked.get() == query_options[28]:
+		# Do computations for Requirement 6a
+		results_text = requirement6a(query_runner)
+		results_label.config(text = results_text)
+	
+	elif clicked.get() == query_options[29]:
+		# Do computations for Requirement 6b
+		results_text = requirement6b(query_runner)
 		results_label.config(text = results_text)
 
 # ==================================== END OF TESTING REQUIREMENTS FUNCTIONS =================================
