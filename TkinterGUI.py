@@ -965,18 +965,18 @@ def requirement1(query_runner):
 	book_id_or_name = b_book_id_entry.get()
 	
 	# Check if the values are valid
-	if not card_no or not branch_id_or_name or not book_id_or_name:
-		results_label.config(text = "Please fill in all fields.")
-		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
+	if ((not card_no) or (not branch_id_or_name) or (not book_id_or_name)):
+		return "Please fill in all fields."
 	
 	# Check if branch_id_or_name is a number or a string
 	try:
 		branch_id = int(branch_id_or_name)
 		is_branch_id = True
+		print ("Branch ID")
 	except ValueError:
 		# If it's not an int, assume it's a branch name
 		is_branch_id = False
+		print ("Branch Name")
 	
 
 	# Determin if book_id is ID or Title
@@ -984,31 +984,42 @@ def requirement1(query_runner):
 		# try to convert book_id to an integer
 		book_id = int(book_id_or_name)
 		is_book_id = True
+		print ("Book ID")
 	except ValueError:
 		# if it fails, assume it's a title
 		is_book_id = False
+		print ("Book Title")
+
+	print ("Tested for book and branch names.")
 
 	if is_book_id:
+		print ("In is_book_id")
+
 		# If it's an ID, Check if the book exists in BOOK_COPIES
 		query_runner.execute("SELECT * FROM BOOK_COPIES WHERE Book_Id = ? AND No_Of_Copies > 0;", (book_id,))
 		available_book = query_runner.fetchone()
 
-		if not available_book:
-			results_label.config(text = "Book not found/available.")
-			results_label.grid(row = 100, column = 0, columnspan = 2)
-			return
+		print ("Passed is_book_id execute")
 		
+		if not available_book:
+			print ("Book not found/available.")
+			return "Book not found/available."
+		
+		print ("Book is found")
 		book_id_to_use = book_id
-	else:	
+	else:
+		print ("In is_not_book_id")
 		# If it's a title, get its ID
 		query_runner.execute("SELECT Book_Id FROM BOOK WHERE Title = ?;", (book_id_or_name,))
 		result = query_runner.fetchone()
 
+		print ("Passed is_not_book_id execute")
+
 		if result is None:
-			results_label.config(text = "Book not found.")
-			results_label.grid(row = 100, column = 0, columnspan = 2)
-			return
+			print ("Book not found")
+			return "Book not found."
 		
+		print ("Book is found")
 		book_id_to_use = result[0]
 
 		# Check availability of the book in BOOK_COPIES
@@ -1016,9 +1027,7 @@ def requirement1(query_runner):
 		available_book = query_runner.fetchone()[0]
 
 		if not available_book:
-			results_label.config(text = "Book not found/available.")
-			results_label.grid(row = 100, column = 0, columnspan = 2)
-			return
+			return "Book not found/available."
 		
 		if is_branch_id:
 			# if it's a branch id, use it
@@ -1029,28 +1038,40 @@ def requirement1(query_runner):
 			result = query_runner.fetchone()
 
 			if result is None:
-				results_label.config(text = "Branch not found.")
-				results_label.grid(row = 100, column = 0, columnspan = 2)
-				return
+				return "Branch not found."
 			
 			branch_id_to_use = result[0]
 
-		# Do the checkout now that you have bookid and branchid
-		query_runner.execute("""
-			INSERT INTO BOOK_LOANS(Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date)
-			VALUES (?, ?, ?, CURRENT_DATE, DATE(CURRENT_DATE, '+1 month'), 'NULL');
-			""", (book_id_to_use, branch_id_to_use, card_no))
+	# Create the trigger if it does not exists and have it run after update
+	# https://www.sqlitetutorial.net/sqlite-trigger/
+
+	# Do the checkout now that you have bookid and branchid
+	query_runner.execute("""
+		INSERT INTO BOOK_LOANS(Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date)
+		VALUES (?, ?, ?, CURRENT_DATE, DATE(CURRENT_DATE, '+1 month'), 'NULL');
+		""", (book_id_to_use, branch_id_to_use, card_no))
 		
-		results_label.config(text = "Book checked out successfully.")
-
-		# Clear the entries
-		bl_card_no_entry.delete(0, END)
-		b_book_id_entry.delete(0, END)
-		bc_branch_id_entry.delete(0, END)
+	# Trigger should runautomatically if you did after update trigger
 		
+	# You will need to perform a select query to show the updated table output of book_copies
 
+	# Since you need to retrieve the data separately to display them correctly, here is the code you can uncomment
+	# for record in records:
+		# result_book_id += str(str(record[0]) + "\n")
+		# result_branch_id += str(str(record[1]) + "\n")
+		# result_noof_copies += str(str(record[2]) + "\n")
 
-	return
+	# This part should be "removed" since the select query is doing the action
+	results_label.config(text = "Book checked out successfully.")
+
+	# Clear the entries
+	bl_card_no_entry.delete(0, END)
+	b_book_id_entry.delete(0, END)
+	bc_branch_id_entry.delete(0, END)
+	
+	# Add the string arrays to the return statement and do the stuff in the do_query...
+	# Or display it like how you always have done it, bruteforce...
+	return 
 
 # Requirement 2 - Sign up a new Borrower
 def requirement2(query_runner):
