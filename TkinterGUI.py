@@ -271,9 +271,14 @@ def select_from_dropdown(event):
 		query_select_label.config(text = "Add A Late Fee To The Library Branch Table With Determined Fees")
 
 		# Textbox Fields Locations
-
+		lb_branch_name_entry.grid(row = 4, column = 1)
+		lb_branch_latefee_entry.grid(row = 5, column = 1)
 		# Textbox Labels Location
-		
+		lb_branch_name_label = Label(textfield_frame, text = "Library Branch Name:")
+		lb_branch_name_label.grid(row = 4, column = 0, sticky = "w")
+		lb_branch_latefee_label = Label(textfield_frame, text = "Library Branch Late Fee:")
+		lb_branch_latefee_label.grid(row =5, column = 0, sticky = "w")
+
 		return
 	elif clicked.get() == query_options[17]:	# Part 3 - Query 3
 		# Part 3 - Query 3 - View All Details About A Book Loan
@@ -737,73 +742,110 @@ def part2_query10(query_runner):
 
 # Part 3 - Query 1 Creator: Ivan
 def part3_query1():
-	query_conn = sqlite3.connect('test.db')
-	query_runner = query_conn.cursor()
+    query_conn = sqlite3.connect('test.db')
+    query_runner = query_conn.cursor()
 
-	query_runner.execute("ALTER TABLE BOOK_LOANS ADD COLUMN Late INTEGER;")
-	query_runner.execute("""
-						UPDATE BOOK_LOANS
-						SET Late = (
+    try:
+        # Check if the 'Late' column exists
+        query_runner.execute("PRAGMA table_info(BOOK_LOANS);")
+        columns = [column[1] for column in query_runner.fetchall()]
+        if 'Late' not in columns:
+            query_runner.execute("ALTER TABLE BOOK_LOANS ADD COLUMN Late INTEGER;")
+
+        query_runner.execute("""
+            				UPDATE BOOK_LOANS
+							SET Late = (
     						CASE
         						WHEN CAST(JULIANDAY(Returned_date) > JULIANDAY(Due_Date) AS INTEGER) THEN 1
         						WHEN CAST(JULIANDAY(Returned_date) <= JULIANDAY(Due_Date) AS INTEGER) THEN 0
         						ELSE 0
-    						END
+   	 						END
     						);
-					  	""")
+        					""")
+
+        query_conn.commit()
+
+        # Retrieve all records
+        query_runner.execute("SELECT * FROM BOOK_LOANS;")
+        records = query_runner.fetchall()
+
+        result_book_id = ''
+        result_branch_id = ''
+        result_card_no = ''
+        result_date_out = ''
+        result_due_date = ''
+        result_returned_date = ''
+        result_late = ''
+
+        for record in records:
+            result_book_id += str(str(record[0]) + "\n")
+            result_branch_id += str(str(record[1]) + "\n")
+            result_card_no += str(str(record[2]) + "\n")
+            result_date_out += str((record[3]) + "\n")
+            result_due_date += str((record[4]) + "\n")
+            result_returned_date += str((record[5]) + "\n")
+            result_late += str(str(record[6]) + "\n")
+
+        return (result_book_id, result_branch_id, result_card_no, result_date_out, result_due_date, result_returned_date, result_late)
 	
-	query_conn.commit()
-
-
-	query_runner.execute("""
-						SELECT *
-					  	FROM BOOK_LOANS;
-					  	""")
-	
-	records = query_runner.fetchall()
-	print(records)
-
-	result_book_id = ''
-	result_branch_id = ''
-	result_card_no = ''
-	result_date_out = ''
-	result_due_date = ''
-	result_returned_date = ''
-	result_late = ''
-	
-	for record in records:
-		result_book_id += str(str(record[0]) + "\n")
-		result_branch_id += str(str(record[1]) + "\n")
-		result_card_no += str(str(record[2]) + "\n")
-		result_date_out += str(record[3] + "\n")
-		result_due_date += str(record[4] + "\n")
-		result_returned_date += str(record[5] + "\n")
-		result_late += str(str(record[6]) + "\n")
-
-	return (result_book_id, result_branch_id, result_card_no, result_date_out, result_due_date, result_returned_date, result_late) 
+    finally:
+        query_conn.close() 
 
 # Part 3 - Query 2 Creator: Ivan
 def part3_query2():
 	query_conn = sqlite3.connect('test.db')
 	query_runner = query_conn.cursor()
 
-	query_runner.execute("ALTER TABLE LIBRARY_BRANCH ADD COLUMN LateFee FLOAT DEFAULT 0.00;")
-	query_runner.execute("""
-						UPDATE LIBRARY_BRANCH
-						SET LateFee = (
-    						CASE
-        						WHEN Branch_Name = 'Main Branch' THEN 100.00
-        						WHEN Branch_Name = 'West Branch' THEN 50.00
-        						WHEN Branch_Name = 'East Branch' THEN 10.00
-        						ELSE 420.69
-    						END
-    						);
-					  	""")
+	try:
+		query_runner.execute("PRAGMA table_info(LIBRARY_BRANCH);")
+		columns = [column[1] for column in query_runner.fetchall()]
+		if 'LateFee' not in columns:
+			query_runner.execute("ALTER TABLE LIBRARY_BRANCH ADD COLUMN LateFee FLOAT DEFAULT 0.00;")
 
-	query_conn.commit()
-	query_conn.close()
 
-	return "Successfully executed query 3.2"
+		verified = True
+		invalid_message = "The following information is missing/invalid: "
+
+		verify_name = lb_branch_name_entry.get()
+		if not verify_name:
+			verified = False
+			invalid_message += "Library Branch Name. "
+		verify_latefee = lb_branch_latefee_entry.get()
+		if not verify_latefee:
+			verified = False
+			invalid_message += "Library Branch Late Fee. "
+
+		query_runner.execute("""
+							UPDATE LIBRARY_BRANCH
+							SET LateFee = (:latefee)
+    						WHERE Branch_Name = (:name);
+					   		""", 
+								{
+									'latefee': lb_branch_latefee_entry.get(),
+									'name': lb_branch_name_entry.get()
+								}
+							)
+		
+		query_conn.commit()
+		
+		query_runner.execute("SELECT * FROM LIBRARY_BRANCH;")
+		records = query_runner.fetchall()
+
+		result_branch_id = ''
+		result_branch_name = ''
+		result_branch_address = ''
+		result_latefee = ''
+
+		for record in records:
+			result_branch_id += str(str(record[0]) + "\n")
+			result_branch_name += str(record[1] + "\n")
+			result_branch_address += str(record[2] + "\n")
+			result_latefee += str(str(record[3]) + "\n")
+
+		return (result_branch_id, result_branch_name, result_branch_address, result_latefee)
+	
+	finally:
+		query_conn.close()
 
 # Part 3 - Query 3 Creator: 
 def part3_query3(query_runner):
@@ -1003,8 +1045,28 @@ def do_query():
 
 	elif clicked.get() == query_options[16]:
 		# Do computations for Part 3 - Query 2
-		results_text = part3_query2()
-		results_label.config(text = results_text)
+		(result_branch_id, result_branch_name, result_branch_address, result_latefee) = part3_query2()
+
+		results0a = Label(results_frame, text = "Branch Id", justify = "left")
+		results0b = Label(results_frame, text = "Branch Name", justify = "left")
+		results0c = Label(results_frame, text = "Branch Address", justify = "left")
+		results0d = Label(results_frame, text = "Late Fee", justify = "left")
+
+		results1 = Label(results_frame, text = result_branch_id, justify = "left")
+		results2 = Label(results_frame, text = result_branch_name, justify = "left")
+		results3 = Label(results_frame, text = result_branch_address, justify = "left")
+		results4 = Label(results_frame, text = result_latefee, justify = "left")
+
+		results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 2)
+		results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 2)
+		results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 2)
+		results0d.grid(row = RESULTS_ROW-1, column = 3, padx = 2)
+
+		results1.grid(row = RESULTS_ROW, column = 0, padx = 2, sticky = "w")
+		results2.grid(row = RESULTS_ROW, column = 1, padx = 2, sticky = "w")
+		results3.grid(row = RESULTS_ROW, column = 2, padx = 2, sticky = "w")
+		results4.grid(row = RESULTS_ROW, column = 3, padx = 2, sticky = "w")
+
 
 	elif clicked.get() == query_options[17]:
 		# Do computations for Part 3 - Query 3
@@ -1294,6 +1356,7 @@ p_address_label = Label(textfield_frame, text = "Publisher's Address", width = 3
 lb_branch_id_label = Label(textfield_frame, text = "Library Branch ID", width = 30)
 lb_branch_name_label = Label(textfield_frame, text = "Library Branch's Name", width = 30)
 lb_branch_address_label = Label(textfield_frame, text = "Library Branch's Address", width = 30)
+lb_branch_latefee_label = Label(textfield_frame, text = "Library Branch's Late Fee", width = 30)
 
 # These are all of the labels for the attributes from the BORROWER table
 # Not all attributes may be used here
@@ -1342,6 +1405,7 @@ p_address_entry = Entry(textfield_frame, width = 30)
 lb_branch_id_entry = Entry(textfield_frame, width = 30)
 lb_branch_name_entry = Entry(textfield_frame, width = 30)
 lb_branch_address_entry = Entry(textfield_frame, width = 30)
+lb_branch_latefee_entry = Entry(textfield_frame, width = 30)
 
 # These are all of the entries for the attributes from the BORROWER table
 # Not all attributes may be used here
