@@ -689,9 +689,18 @@ def part2_query9(query_runner):
 	records = query_runner.fetchall()
 	print(records)
 
+	result_borrower_name = ''
+	result_book_title = ''
+	result_Author = ''
+	result_Date_out = ''
 
+	for record in records:
+		result_borrower_name += str(record[0] + "\n")
+		result_book_title += str(record[1] + "\n")
+		result_Author += str(record[2] + "\n")
+		result_Date_out += str(record[3] + "\n")
 
-	return "Successfully executed query 9"
+	return (result_borrower_name, result_book_title, result_Author, result_Date_out)
 
 # Part 2 - Query 10 Creator: Ivan
 def part2_query10(query_runner):
@@ -715,9 +724,16 @@ def part2_query10(query_runner):
 	records = query_runner.fetchall()
 	print(records)
 
+	result_borrower_name = ''
+	result_borrower_address = ''
+	result_library_branch_name = ''
 
+	for record in records:
+		result_borrower_name += str(record[0] + "\n")
+		result_borrower_address += str(record[1] + "\n")
+		result_library_branch_name += str(record[2] + "\n")
 
-	return "Successfully executed query 10"
+	return (result_borrower_name, result_borrower_address, result_library_branch_name)
 
 # Part 3 - Query 1 Creator: Ivan
 def part3_query1():
@@ -737,9 +753,34 @@ def part3_query1():
 					  	""")
 	
 	query_conn.commit()
-	query_conn.close()
 
-	return "Successfully executed query 3.1"
+
+	query_runner.execute("""
+						SELECT *
+					  	FROM BOOK_LOANS;
+					  	""")
+	
+	records = query_runner.fetchall()
+	print(records)
+
+	result_book_id = ''
+	result_branch_id = ''
+	result_card_no = ''
+	result_date_out = ''
+	result_due_date = ''
+	result_returned_date = ''
+	result_late = ''
+	
+	for record in records:
+		result_book_id += str(str(record[0]) + "\n")
+		result_branch_id += str(str(record[1]) + "\n")
+		result_card_no += str(str(record[2]) + "\n")
+		result_date_out += str(record[3] + "\n")
+		result_due_date += str(record[4] + "\n")
+		result_returned_date += str(record[5] + "\n")
+		result_late += str(str(record[6]) + "\n")
+
+	return (result_book_id, result_branch_id, result_card_no, result_date_out, result_due_date, result_returned_date, result_late) 
 
 # Part 3 - Query 2 Creator: Ivan
 def part3_query2():
@@ -876,18 +917,89 @@ def do_query():
 
 	elif clicked.get() == query_options[11]:
 		# Do computations for Part 2 - Query 9
-		results_text = part2_query9(query_runner)
-		results_label.config(text = results_text)
+		(result_borrower_name, result_book_title, result_Author, result_Date_out) = part2_query9(query_runner)
+
+		# Create seperate labels for displaying results separately
+		results0a = Label(results_frame, text = "Borrower Name", justify = "left")
+		results0b = Label(results_frame, text = "Book Title", justify = "left")
+		results0c = Label(results_frame, text = "Author", justify = "left")
+		results0d = Label(results_frame, text = "Date Out", justify = "left")
+
+		results1 = Label(results_frame, text = result_borrower_name, justify = "left")
+		results2 = Label(results_frame, text = result_book_title, justify = "left")
+		results3 = Label(results_frame, text = result_Author, justify = "left")
+		results4 = Label(results_frame, text = result_Date_out, justify = "left")
+
+		# Add the results of the query into the grid and display them properly
+		results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 2)
+		results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 2)
+		results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 2)
+		results0d.grid(row = RESULTS_ROW-1, column = 3, padx = 2)
+
+		results1.grid(row = RESULTS_ROW, column = 0, padx = 2, sticky = "w")
+		results2.grid(row = RESULTS_ROW, column = 1, padx = 2, sticky = "w")
+		results3.grid(row = RESULTS_ROW, column = 2, padx = 2, sticky = "w")
+		results4.grid(row = RESULTS_ROW, column = 3, padx = 2, sticky = "w")
 
 	elif clicked.get() == query_options[12]:
 		# Do computations for Part 2 - Query 10
-		results_text = part2_query10(query_runner)
-		results_label.config(text = results_text)
+		(result_borrower_name, result_borrower_address, result_library_branch_name) = part2_query10(query_runner)
+		
+		results0a = Label(results_frame, text = "Borrower Name", justify = "left")
+		results0b = Label(results_frame, text = "Borrower Address", justify = "left")
+		results0c = Label(results_frame, text = "Branch Name", justify = "left")
+
+		results1 = Label(results_frame, text = result_borrower_name, justify = "left")
+		results2 = Label(results_frame, text = result_borrower_address, justify = "left")
+		results3 = Label(results_frame, text = result_library_branch_name, justify = "left")
+
+
+		results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 2)
+		results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 2)
+		results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 2)
+
+		results1.grid(row = RESULTS_ROW, column = 0, padx = 2, sticky = "w")
+		results2.grid(row = RESULTS_ROW, column = 1, padx = 2, sticky = "w")
+		results3.grid(row = RESULTS_ROW, column = 2, padx = 2, sticky = "w")
 
 	elif clicked.get() == query_options[15]:
 		# Do computations for Part 3 - Query 1
-		results_text = part3_query1()
-		results_label.config(text = results_text)
+		(result_book_id, result_branch_id, result_card_no, result_date_out, result_due_date, result_returned_date, result_late) = part3_query1()
+		
+		results0a = Label(results_frame, text = "Book Id", justify = "left")
+		results0b = Label(results_frame, text = "Branch Id", justify = "left")
+		results0c = Label(results_frame, text = "Card Number", justify = "left")
+		results0d = Label(results_frame, text = "Date Out", justify = "left")
+		results0e = Label(results_frame, text = "Due Date", justify = "left")
+		results0f = Label(results_frame, text = "Returned Date", justify = "left")
+		results0g = Label(results_frame, text = "Late", justify = "left")
+
+		results1 = Label(results_frame, text = result_book_id, justify = "left")
+		results2 = Label(results_frame, text = result_branch_id, justify = "left")
+		results3 = Label(results_frame, text = result_card_no, justify = "left")
+		results4 = Label(results_frame, text = result_date_out, justify = "left")
+		results5 = Label(results_frame, text = result_due_date, justify = "left")
+		results6 = Label(results_frame, text = result_returned_date, justify = "left")
+		results7 = Label(results_frame, text = result_late, justify = "left")
+		
+
+		results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 2)
+		results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 2)
+		results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 2)
+		results0d.grid(row = RESULTS_ROW-1, column = 3, padx = 2)
+		results0e.grid(row = RESULTS_ROW-1, column = 4, padx = 2)
+		results0f.grid(row = RESULTS_ROW-1, column = 5, padx = 2)
+		results0g.grid(row = RESULTS_ROW-1, column = 6, padx = 2)
+
+		results1.grid(row = RESULTS_ROW, column = 0, padx = 2, sticky = "w")
+		results2.grid(row = RESULTS_ROW, column = 1, padx = 2, sticky = "w")
+		results3.grid(row = RESULTS_ROW, column = 2, padx = 2, sticky = "w")
+		results4.grid(row = RESULTS_ROW, column = 3, padx = 2, sticky = "w")
+		results5.grid(row = RESULTS_ROW, column = 4, padx = 2, sticky = "w")
+		results6.grid(row = RESULTS_ROW, column = 5, padx = 2, sticky = "w")
+		results7.grid(row = RESULTS_ROW, column = 6, padx = 2, sticky = "w")
+		
+	
 
 	elif clicked.get() == query_options[16]:
 		# Do computations for Part 3 - Query 2
