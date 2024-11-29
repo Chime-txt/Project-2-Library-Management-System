@@ -38,9 +38,9 @@ import os
 # BEGIN ================================== Creating Windows ================================== BEGIN
 root = Tk()
 root.title('Library Management System')
-root.geometry("600x600")
-root.minsize(600, 600)
-root.maxsize(600, 900)
+root.geometry("800x800")
+root.minsize(800, 800)
+root.maxsize(800, 100)
 # END ==================================== Creating Windows ==================================== END
 
 
@@ -82,7 +82,15 @@ query_options = [
 	# RESETING DATABASE is purely optional and for quick testing purposes
 	"",									#      ...     [18]
 	"======= RESET DATABASE =======",	#      ...     [19]
-	"Reset Database"					# query_options[20]
+	"Reset Database",					# query_options[20]
+	"======= Testing stuff ========",	# query_options[21]
+	"Check out a Book",					# query_options[22]
+	"Sign up a new Borrower",			# query_options[23]
+	"Add new Book to All Branches",		# query_options[24]
+	"Check copies Loaned",				# query_options[25]
+	"Check for Late Returns",			# query_options[26]
+	"View Info on a Book Loan"			# query_options[27]
+
 ]
 # END ==================================== Dropdown Options ==================================== END
 
@@ -285,6 +293,88 @@ def select_from_dropdown(event):
 		
 		
 		return
+	#########################TESTING REQUIREMENTS STUFF ####################################
+	elif clicked.get() == query_options[22]: 	# Check out a Book (Requirement 1)
+		# Part 3 - Requirement 1 - Check out a book, add to Book_Loan, 
+		# the number of copies needs to be updated via trigger in Book_copies table
+		# Show output of updated Book_Copies table [10 points]
+		query_select_label.config(text = "Check out a Book")
+
+		# Textbox Fields Locations
+		bl_card_no_entry.grid(row = 4, column = 1)
+		bc_branch_id_entry.grid(row = 5, column = 1)
+		b_book_id_entry.grid(row = 6, column = 1)
+
+		# Textbox Labels Location
+		bl_card_no_label.grid(row = 4, column = 0, sticky = "w")
+		branch_name_or_id_label = Label(textfield_frame, text = "Library Branch's Name or ID", width = 30)
+		branch_name_or_id_label.grid(row = 5, column = 0, sticky = "w")
+		book_id_or_title_label = Label(textfield_frame, text = "Book ID or Title", width = 30)
+		book_id_or_title_label.grid(row = 6, column = 0, sticky = "w")
+
+
+		return
+	elif clicked.get() == query_options[23]: 	# Sign up a new Borrower (Requirement 2)
+		# Part 3 - Requirement 2 - Add information about new Borrower. Do not provide CardNo in query.
+		# Output the card number as if you are giving a new library card. [3 points]
+
+		# Textbox Fields Locations
+
+		# Textbox Labels Location
+
+		return
+	elif clicked.get() == query_options[24]: 	# Add new Book to All Branches (Requirement 3)
+		# Part 3 - Requirement 3 - Add a new book with publisher (you can use a publisher that already exists) 
+		# and author information to all 5 branches with 5 copies for each branch. [5 points]
+
+		# Textbox Fields Locations
+
+		# Textbox Labels Location
+
+		return
+	elif clicked.get() == query_options[25]: 	# Check copies Loaned (Requirement 4)
+		# Part 3 - Requirement 4 - Given a book title list the number of copies loaned out per branch. [5 points]
+
+		# Textbox Fields Locations
+
+		# Textbox Labels Location
+
+		return
+	elif clicked.get() == query_options[26]: 	# Check for Late Returns (Requirement 5)
+		# Part 3 - Requirement 5 - Given any due date range list the Book_loans that were returned late 
+		# and how many days they were late [8 points]
+		
+		# Textbox Fields Locations
+
+		# Textbox Labels Location
+
+		return
+	elif clicked.get() == query_options[27]: 	# View Info on a Book Loan (Requirement 6)
+		# Part 3 - Requirement 6 - return view's results by applying criteria
+		# List for every borrower the ID, name, and if there is any lateFee balance.
+		# The user has the right to search either by a borrower ID, name, part of the name or run query with no filters/criteria.
+		# Amount needs to be in US dollars. For borrrowers with zero(0) or NULL balanace, you need to return zero dollars ($0.00)
+		# Make sure that the query returns meaningful attribute names.
+		# In the case that the user decides not to provide any filters, order the results based on balance amount. 
+		# Make sure you return all records 
+		### idk if this is a part two but here it is: ###
+		# List book information in the view. user must search with borrowerID and any of the following search items:
+		# book id, book title, part of book title, or run query with no filters/criteria
+		# The late fee amount needs to be in US dollars. The late fee price amount needs to have two decimals as well as $ sign
+		# For books that they do not have any late fee amount, you need to substitute NULL value with 'Non-Appliable' text
+		# Make sure that the query returns meaningful attribute names
+		# In the case that the user decides not to provide any filters, order the results based on highest late fee remaining.
+
+		# Textbox Fields Locations
+
+		# Textbox Labels Location
+
+		return
+	
+
+
+
+
 	else:
 		query_select_label.config(text = "Select the query using the dropdown above.")
 		return
@@ -862,7 +952,135 @@ def part3_query3(query_runner):
 
 
 	return
+# ==============================TESTING REQUIREMENTS FUNCTIONS ================================= 
+# Requirement 1 - Check out a Book 
+def requirement1(query_runner):
+	# Clear the old results from the frame 
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
 
+	# Get input values
+	card_no = bl_card_no_entry.get()
+	branch_id_or_name = bc_branch_id_entry.get()
+	book_id_or_name = b_book_id_entry.get()
+	
+	# Check if the values are valid
+	if not card_no or not branch_id_or_name or not book_id_or_name:
+		results_label.config(text = "Please fill in all fields.")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return
+	
+	# Check if branch_id_or_name is a number or a string
+	try:
+		branch_id = int(branch_id_or_name)
+		is_branch_id = True
+	except ValueError:
+		# If it's not an int, assume it's a branch name
+		is_branch_id = False
+	
+
+	# Determin if book_id is ID or Title
+	try:
+		# try to convert book_id to an integer
+		book_id = int(book_id_or_name)
+		is_book_id = True
+	except ValueError:
+		# if it fails, assume it's a title
+		is_book_id = False
+
+	if is_book_id:
+		# If it's an ID, Check if the book exists in BOOK_COPIES
+		query_runner.execute("SELECT * FROM BOOK_COPIES WHERE Book_Id = ? AND No_Of_Copies > 0;", (book_id,))
+		available_book = query_runner.fetchone()
+
+		if not available_book:
+			results_label.config(text = "Book not found/available.")
+			results_label.grid(row = 100, column = 0, columnspan = 2)
+			return
+		
+		book_id_to_use = book_id
+	else:	
+		# If it's a title, get its ID
+		query_runner.execute("SELECT Book_Id FROM BOOK WHERE Title = ?;", (book_id_or_name,))
+		result = query_runner.fetchone()
+
+		if result is None:
+			results_label.config(text = "Book not found.")
+			results_label.grid(row = 100, column = 0, columnspan = 2)
+			return
+		
+		book_id_to_use = result[0]
+
+		# Check availability of the book in BOOK_COPIES
+		query_runner.execute("SELECT * FROM BOOK_COPIES WHERE Book_Id = ? AND No_Of_Copies > 0;", (book_id_to_use,))
+		available_book = query_runner.fetchone()[0]
+
+		if not available_book:
+			results_label.config(text = "Book not found/available.")
+			results_label.grid(row = 100, column = 0, columnspan = 2)
+			return
+		
+		if is_branch_id:
+			# if it's a branch id, use it
+			branch_id_to_use = branch_id
+		else:
+			# if it's a branch name, get its ID
+			query_runner.execute("SELECT Branch_Id FROM LIBRARY_BRANCH WHERE Branch_Name = '?';", (branch_id_or_name,))
+			result = query_runner.fetchone()
+
+			if result is None:
+				results_label.config(text = "Branch not found.")
+				results_label.grid(row = 100, column = 0, columnspan = 2)
+				return
+			
+			branch_id_to_use = result[0]
+
+		# Do the checkout now that you have bookid and branchid
+		query_runner.execute("""
+			INSERT INTO BOOK_LOANS(Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date)
+			VALUES (?, ?, ?, CURRENT_DATE, DATE(CURRENT_DATE, '+1 month'), 'NULL');
+			""", (book_id_to_use, branch_id_to_use, card_no))
+		
+		results_label.config(text = "Book checked out successfully.")
+
+		# Clear the entries
+		bl_card_no_entry.delete(0, END)
+		b_book_id_entry.delete(0, END)
+		bc_branch_id_entry.delete(0, END)
+		
+
+
+	return
+
+# Requirement 2 - Sign up a new Borrower
+def requirement2(query_runner):
+	
+
+	return
+
+# Requirement 3 - Add new Book to All Branches
+def requirement3(query_runner):
+	
+
+	return
+
+# Requirement 4 - Check copies Loaned
+def requirement4(query_runner):
+	
+
+	return
+
+# Requirement 5 - Check for Late Returns
+def requirement5(query_runner):
+	
+
+	return
+
+# Requirement 6 - View Info on a Book Loan
+def requirement6(query_runner):
+
+
+	return
 	
 # END ==================================== Query  Functions ==================================== END
 
@@ -992,6 +1210,40 @@ def do_query():
 		# Do computations for Part 3 - Query 3
 		results_text = part3_query3(query_runner)
 		results_label.config(text = results_text)
+
+#	==================================== TESTING REQUIREMENTS FUNCTIONS =================================
+
+	elif clicked.get() == query_options[22]:
+		# Do computations for Requirement 1
+		results_text = requirement1(query_runner)
+		results_label.config(text = results_text)
+
+	elif clicked.get() == query_options[23]:
+		# Do computations for Requirement 2
+		results_text = requirement2(query_runner)
+		results_label.config(text = results_text)
+	
+	elif clicked.get() == query_options[24]:
+		# Do computations for Requirement 3
+		results_text = requirement3(query_runner)
+		results_label.config(text = results_text)
+
+	elif clicked.get() == query_options[25]:
+		# Do computations for Requirement 4
+		results_text = requirement4(query_runner)
+		results_label.config(text = results_text)
+
+	elif clicked.get() == query_options[26]:
+		# Do computations for Requirement 5
+		results_text = requirement5(query_runner)
+		results_label.config(text = results_text)
+
+	elif clicked.get() == query_options[27]:
+		# Do computations for Requirement 6
+		results_text = requirement6(query_runner)
+		results_label.config(text = results_text)
+
+# ==================================== END OF TESTING REQUIREMENTS FUNCTIONS =================================
 
 	else:
 		results_label.config(text = "")
