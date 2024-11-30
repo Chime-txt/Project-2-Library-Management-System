@@ -1029,7 +1029,8 @@ def part3_query3(query_runner):
 
 	return
 # ==============================TESTING REQUIREMENTS FUNCTIONS ================================= 
-# Requirement 1 - Check out a Book 
+# Requirement 1 - Check out a Book
+# Creator: Trung Nguyen & Chime Nguyen
 def requirement1(query_runner, query_conn):
 	# Clear the old results from the frame 
 	for widget in results_frame.grid_slaves():
@@ -1042,21 +1043,30 @@ def requirement1(query_runner, query_conn):
 
 	book_id_to_use = 0
 	branch_id_to_use = 0
+
+	branch_id = 0
+	book_id = 0
 	
 	# Check if the values are valid
 	if ((not card_no) or (not branch_id_or_name) or (not book_id_or_name)):
 		return ("Please fill in all fields.", 0, 0)
 	
+
+	# Branch ID Check
 	# Check if branch_id_or_name is a number or a string
 	try:
+		# If it's an int, it is a branch id
 		branch_id = int(branch_id_or_name)
 		is_branch_id = True
 		print ("Branch ID")
 	except ValueError:
 		# If it's not an int, assume it's a branch name
+		branch_id = str(branch_id_or_name)
 		is_branch_id = False
 		print ("Branch Name")
 	
+	print (type(branch_id))
+
 
 	# Determine if book_id is ID or Title
 	try:
@@ -1065,35 +1075,42 @@ def requirement1(query_runner, query_conn):
 		is_book_id = True
 		print ("Book ID")
 	except ValueError:
-		# if it fails, assume it's a title
+		# if it fails, assume it's a string for the title
+		book_id = str(book_id_or_name)
 		is_book_id = False
 		print ("Book Title")
 
 	print ("Tested for book and branch names.")
+	
+	print (type(book_id))
 
+	# Book 
 	if is_book_id:
 		print ("In is_book_id")
 
 		# If it's an ID, Check if the book exists in BOOK_COPIES
-		query_runner.execute("SELECT * FROM BOOK_COPIES WHERE Book_Id = ? AND No_Of_Copies > 0;", (book_id,))
+		query_runner.execute("SELECT * FROM BOOK_COPIES WHERE Book_Id = ? AND No_Of_Copies > 0", (book_id,))
 		available_book = query_runner.fetchone()
 
 		print ("Passed is_book_id execute")
 		
+		# If the book is not found or available, exit the function
 		if not available_book:
 			print ("Book not found/available.")
 			return ("Book not found/available.", 0, 0)
 		
+		# Otherwise, the book was found
 		print ("Book is found")
 		book_id_to_use = book_id
 	else:
 		print ("In is_not_book_id")
 		# If it's a title, get its ID
-		query_runner.execute("SELECT Book_Id FROM BOOK WHERE Title = ?;", (book_id_or_name,))
+		query_runner.execute("SELECT Book_Id FROM BOOK WHERE Title = ?", (book_id_or_name,))
 		result = query_runner.fetchone()
 
 		print ("Passed is_not_book_id execute")
 
+		# If the book id was not found based on the title, exit the function
 		if result is None:
 			print ("Book not found")
 			return ("Book not found.", 0, 0)
@@ -1102,26 +1119,52 @@ def requirement1(query_runner, query_conn):
 		book_id_to_use = result[0]
 
 		# Check availability of the book in BOOK_COPIES
-		query_runner.execute("SELECT * FROM BOOK_COPIES WHERE Book_Id = ? AND No_Of_Copies > 0;", (book_id_to_use,))
+		query_runner.execute("SELECT * FROM BOOK_COPIES WHERE Book_Id = ? AND No_Of_Copies > 0", (book_id_to_use,))
 		available_book = query_runner.fetchone()[0]
 
-	if not available_book:
-		return ("Book not found/available.", 0, 0)
+		# If the book is not found or available, exit the function
+		if not available_book:
+			return ("Book not found/available.", 0, 0)
+
 	
 	# This part checks the branch id or branch name
 	if is_branch_id:
-		# if it's a branch id, check if it is a valid
-		branch_id_to_use = branch_id
-	else:
-		# if it's a branch name, get its ID
-		query_runner.execute("SELECT Branch_Id FROM LIBRARY_BRANCH WHERE Branch_Name = '?';", (branch_id_or_name,))
-		result = query_runner.fetchone()
+		# if it's a branch id, check if it is a valid branch id
 
-		# Return the warning when the branch name does not exists
-		if result is None:
+		print (type(branch_id))
+		print (type(book_id))
+		test = query_runner.execute("SELECT Branch_Name FROM LIBRARY_BRANCH WHERE Branch_Id = (:branchID)",
+					{
+						'branchID': branch_id
+					})
+		
+		result = test.fetchone()[0]
+
+		if result == None:
+			# Otherwise, branch is not available, exit the function
+			return ("Branch not available 2", 0, 0)
+		
+		# Use this branch id for query
+		branch_id_to_use = branch_id
+
+	else:
+		# if it's a branch name, check if the branch name has an ID
+		print (type(branch_id))
+		print (type(book_id))
+		test = query_runner.execute("SELECT Branch_Id FROM LIBRARY_BRANCH WHERE Branch_Name = (:branchName)",
+							  {
+								  'branchName': branch_id
+							  })
+		result = test.fetchone()[0]
+
+		if result == None:
+			# If branch is not available, exit the function
 			return ("Branch not found.", 0, 0)
-			
-		branch_id_to_use = result[0]
+
+		# Use the result in the first column that contains the branch id
+		branch_id_to_use = result
+
+	# Check if the person has already checked out this book and has not returned it
 
 	# Create the trigger if it does not exists and have it run after insert
 	# https://www.sqlitetutorial.net/sqlite-trigger/
@@ -1131,24 +1174,47 @@ def requirement1(query_runner, query_conn):
 					  BEGIN
 					    UPDATE BOOK_COPIES
 						SET No_Of_Copies = No_Of_Copies-1
-					    WHERE Branch_Id = NEW.branch_id_to_use
-					  	AND Book_Id = book_id_to_use;
+					    WHERE Branch_Id = NEW.Branch_Id
+					  	AND Book_Id = NEW.Book_Id;
 					  END""")
 	
 	query_conn.commit()
 	print ("Trigger Created?")
+	query_runner.execute("""SELECT * FROM BOOK_LOANS WHERE Book_Id = (:bookID)
+					AND Branch_Id = (:branchID) AND Card_No = (:cardNO)""",
+					{
+						'bookID': book_id,
+						'branchID': branch_id,
+						'cardNO': card_no 
+					})
+	
+	query_runner.execute("DROP TRIGGER reduce_book_copy_on_branch")
 
-	# Do the checkout now that you have bookid and branchid
-	try:
-		query_runner.execute("""
-		INSERT INTO BOOK_LOANS(Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date)
-		VALUES (?, ?, ?, CURRENT_DATE, DATE(CURRENT_DATE, '+1 month'), 'NULL');
-		""", (book_id_to_use, branch_id_to_use, card_no))
-		query_conn.commit()
-	except:
-		return ("The Borrower Already Has A Loan For The Specific Book In The Branch", 0, 0)
+	already_loaned = query_runner.fetchall()
+
+	print(already_loaned)
+
+	# In the case that the book was checked out before by the person, check if they have a loan
+	if already_loaned != None:
+		if already_loaned[5] == 'NULL':
+			# The book is currently being checked out by the person
+			return ("The Borrower Already Has A Loan For This Specific Book In This Branch", 0, 0)
+		else:
+			# The book was previously checked out by the person
+			# While we could update the dates from the table, due to the limited time on the project,
+			# we will state that the borrower has already borrowed the book before.
+			return ("The Borrower Has Already Borrowed This Specific Book From This Branch", 0, 0)
+			
+	
+	# Do the checkout now that you have book id and branch id
+	query_runner.execute("""
+	INSERT INTO BOOK_LOANS(Book_Id, Branch_Id, Card_No, Date_Out, Due_Date, Returned_date)
+	VALUES (?, ?, ?, CURRENT_DATE, DATE(CURRENT_DATE, '+1 month'), 'NULL')
+	""", (book_id_to_use, branch_id_to_use, card_no))
+
 
 	print ("Inserted New Book Loan?")
+	query_conn.commit()
 	
 	# Trigger should run automatically if you did after update trigger
 	print ("Trigger Ran?")
@@ -1189,6 +1255,7 @@ def requirement1(query_runner, query_conn):
 	return (result_book_id, result_branch_id, result_no_of_copies)
 
 # Requirement 2 - Sign up a new Borrower
+# Creator: Ivan Ko
 def requirement2(query_runner, query_conn):
 	name = bo_name_entry.get()
 	address = bo_address_entry.get()
@@ -1255,6 +1322,7 @@ def requirement2(query_runner, query_conn):
 	return (result_card, result_name, result_address, result_phone)
 
 # Requirement 3 - Add new Book to All Branches
+# Creator: Trung Nguyen
 def requirement3(query_runner):
 	# Get input values
 	book_title = b_title_entry.get()
@@ -1300,6 +1368,7 @@ def requirement3(query_runner):
 	return
 
 # Requirement 4 - Check copies Loaned
+# Creator: Trung Nguyen
 def requirement4(query_runner):
 	# Get input values
 	book_title = b_title_entry.get()
@@ -1381,6 +1450,7 @@ def requirement4(query_runner):
 	return
 
 # Requirement 5 - Check for Late Returns
+# Creator: Trung Nguyen
 def requirement5(query_runner):
 	start_due_date = bl_date_out_start_entry.get()
 	end_due_date = bl_date_out_end_entry.get()
@@ -1451,6 +1521,7 @@ def requirement5(query_runner):
 	return
 
 # Requirement 6 - View Info on a Book Loan
+# Creator: Trung Nguyen
 def requirement6(query_runner):
 	# Get input values
 	card_no = bl_card_no_entry.get()
@@ -1891,28 +1962,27 @@ def do_query():
 	elif clicked.get() == query_options[22]:
 		# Do computations for Requirement 1
 		(result_book_id, result_branch_id, result_no_of_copies) = requirement1(query_runner, query_conn)
-		# if (result_branch_id == 0) or (result_no_of_copies == 0):
-		# 	# Return error message if there was an error
-		# 	results_label.config(text = result_book_id)
-		# 	return
-		
-		# Create seperate labels for displaying results separately
-		results0a = Label(results_frame, text = "Book ID", justify = "left")
-		results0b = Label(results_frame, text = "Branch ID", justify = "left")
-		results0c = Label(results_frame, text = "Number Of Copies", justify = "left")
+		if (result_branch_id == 0) or (result_no_of_copies == 0):
+			# Return error message if there was an error
+			results_label.config(text = result_book_id)
+		else:
+			# Create seperate labels for displaying results separately
+			results0a = Label(results_frame, text = "Book ID", justify = "left")
+			results0b = Label(results_frame, text = "Branch ID", justify = "left")
+			results0c = Label(results_frame, text = "Number Of Copies", justify = "left")
 
-		results1 = Label(results_frame, text = result_book_id, justify = "left")
-		results2 = Label(results_frame, text = result_branch_id, justify = "left")
-		results3 = Label(results_frame, text = result_no_of_copies, justify = "left")
+			results1 = Label(results_frame, text = result_book_id, justify = "left")
+			results2 = Label(results_frame, text = result_branch_id, justify = "left")
+			results3 = Label(results_frame, text = result_no_of_copies, justify = "left")
 
-		# Add the results of the query into the grid and display them properly
-		results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
-		results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 22, sticky = "w")
-		results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 22, sticky = "w")
+			# Add the results of the query into the grid and display them properly
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
+			results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 22, sticky = "w")
+			results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 22, sticky = "w")
 
-		results1.grid(row = RESULTS_ROW, column = 0, padx = 22, sticky = "w")
-		results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "w")
-		results3.grid(row = RESULTS_ROW, column = 2, padx = 22, sticky = "w")
+			results1.grid(row = RESULTS_ROW, column = 0, padx = 22, sticky = "w")
+			results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "w")
+			results3.grid(row = RESULTS_ROW, column = 2, padx = 22, sticky = "w")
 
 	elif clicked.get() == query_options[23]:
 		# Do computations for Requirement 2
