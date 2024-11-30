@@ -8,6 +8,7 @@ from tkinter import *
 import sqlite3
 import csv
 import os
+import random
 
 # BEGIN ======================================== TODO ======================================== BEGIN
 # TODO: Create A Database That Can Automatically Create The Tables And Add Data From CSV Files
@@ -321,8 +322,18 @@ def select_from_dropdown(event):
 		# Output the card number as if you are giving a new library card. [3 points]
 
 		# Textbox Fields Locations
+		bo_name_entry.grid(row = 4, column = 1)
+		bo_address_entry.grid(row = 5, column = 1)
+		bo_phone_entry.grid(row = 6, column = 1)
 
 		# Textbox Labels Location
+		bo_name_label = Label(textfield_frame, text = "New Borrower's Name")
+		bo_name_label.grid(row = 4, column = 0, sticky = "w")
+		bo_address_label = Label(textfield_frame, text = "New Borrower's Address")
+		bo_address_label.grid(row = 5, column = 0, sticky = "w")
+		bo_phone_label = Label(textfield_frame, text = "New Borrower's Phone Number")
+		bo_phone_label.grid(row = 6, column = 0, sticky = "w")
+		
 
 		return
 	elif clicked.get() == query_options[24]: 	# Add new Book to All Branches (Requirement 3)
@@ -1178,10 +1189,70 @@ def requirement1(query_runner, query_conn):
 	return (result_book_id, result_branch_id, result_no_of_copies)
 
 # Requirement 2 - Sign up a new Borrower
-def requirement2(query_runner):
-	
+def requirement2(query_runner, query_conn):
+	name = bo_name_entry.get()
+	address = bo_address_entry.get()
+	phone = bo_phone_entry.get()
 
-	return
+	if (not name) or (not address) or (not phone):
+		results_label.config(text = "Please fill in all fields")
+		results_label.grid(row = 100, column = 0, columnspan = 2)
+		return ("Please fill in all fields", 0, 0, 0)
+	
+	query_runner.execute("SELECT Card_No FROM BORROWER;")
+	Result_Card_No = query_runner.fetchall()
+	Existing_Card_No = ''
+
+	Existing_Card_No = []
+	for number in Result_Card_No:
+		Existing_Card_No.append(number[0])
+		
+
+	query_runner.execute("SELECT Phone FROM BORROWER;")
+	Existing_Phones = query_runner.fetchall()
+
+	
+	for exist_phone in Existing_Phones:
+		if exist_phone[0] == phone:
+			results_label.config(text = "Borrower already added based upon existing phone numbers")
+			results_label.grid(row = 100, column = 0, columnspan = 2)
+			return ("Borrower already added based upon existing phone numbers", 0, 0, 0)
+
+	while(True):
+		generated_card_no = random.randint(100000, 999999)
+		if generated_card_no not in Existing_Card_No:
+			Card_Number = generated_card_no
+			break
+
+	try:
+		query_runner.execute("""
+					  		INSERT INTO BORROWER (Card_No, Name, Address, Phone) 
+					  		VALUES (?, ?, ?, ?);
+						""", (Card_Number, name, address, phone))
+	
+		query_conn.commit()
+	except:
+		return ("The Borrower Already Added", 0, 0, 0)
+
+	query_runner.execute("SELECT * FROM BORROWER;")
+	results = query_runner.fetchall()
+	print(results)
+
+	result_card = ''
+	result_name = ''
+	result_address = ''
+	result_phone = ''
+
+	for result in results:
+		result_card += str(str(result[0]) + "\n")
+		result_name += str(result[1] + "\n")
+		result_address += str(result[2] + "\n")
+		result_phone += str(result[3] + "\n")
+
+	bo_name_entry.delete(0, END)
+	bo_address_entry.delete(0, END)
+	bo_phone_entry.delete(0, END)
+	return (result_card, result_name, result_address, result_phone)
 
 # Requirement 3 - Add new Book to All Branches
 def requirement3(query_runner):
@@ -1845,9 +1916,32 @@ def do_query():
 
 	elif clicked.get() == query_options[23]:
 		# Do computations for Requirement 2
-		results_text = requirement2(query_runner)
-		results_label.config(text = results_text)
-	
+		(result_card, result_name, result_address, result_phone) = requirement2(query_runner, query_conn)
+		
+		if(result_name != 0):
+			results0a = Label(results_frame, text = "Card No", justify = "left")
+			results0b = Label(results_frame, text = "Borrower Name", justify = "left")
+			results0c = Label(results_frame, text = "Borrower Address", justify = "left")
+			results0d = Label(results_frame, text = "Borrower Phone", justify = "left")
+
+			results1 = Label(results_frame, text = result_card, justify = "left")
+			results2 = Label(results_frame, text = result_name, justify = "left")
+			results3 = Label(results_frame, text = result_address, justify = "left")
+			results4 = Label(results_frame, text = result_phone, justify = "left")
+
+
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
+			results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 22, sticky = "w")
+			results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 22, sticky = "w")
+			results0d.grid(row = RESULTS_ROW-1, column = 3, padx = 22, sticky = "w")
+
+			results1.grid(row = RESULTS_ROW, column = 0, padx = 22, sticky = "w")
+			results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "w")
+			results3.grid(row = RESULTS_ROW, column = 2, padx = 22, sticky = "w")
+			results4.grid(row = RESULTS_ROW, column = 3, padx = 22, sticky = "w")
+		else:
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
+
 	elif clicked.get() == query_options[24]:
 		# Do computations for Requirement 3
 		results_text = requirement3(query_runner)
