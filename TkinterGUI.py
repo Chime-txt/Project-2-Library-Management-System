@@ -283,9 +283,9 @@ def select_from_dropdown(event):
 		lb_branch_name_entry.grid(row = 4, column = 1)
 		lb_branch_latefee_entry.grid(row = 5, column = 1)
 		# Textbox Labels Location
-		lb_branch_name_label = Label(textfield_frame, text = "Library Branch Name:")
+		# lb_branch_name_label = Label(textfield_frame, text = "Library Branch Name:") # Already created so this is causing issues
 		lb_branch_name_label.grid(row = 4, column = 0, sticky = "w")
-		lb_branch_latefee_label = Label(textfield_frame, text = "Library Branch Late Fee:")
+		# lb_branch_latefee_label = Label(textfield_frame, text = "Library Branch Late Fee:")
 		lb_branch_latefee_label.grid(row =5, column = 0, sticky = "w")
 
 		return
@@ -325,6 +325,7 @@ def select_from_dropdown(event):
 	elif clicked.get() == query_options[23]: 	# Sign up a new Borrower (Requirement 2)
 		# Part 3 - Requirement 2 - Add information about new Borrower. Do not provide CardNo in query.
 		# Output the card number as if you are giving a new library card. [3 points]
+		query_select_label.config(text = "Sign up a new Borrower")
 
 		# Textbox Fields Locations
 		bo_name_entry.grid(row = 4, column = 1)
@@ -332,11 +333,11 @@ def select_from_dropdown(event):
 		bo_phone_entry.grid(row = 6, column = 1)
 
 		# Textbox Labels Location
-		bo_name_label = Label(textfield_frame, text = "New Borrower's Name")
+		# bo_name_label = Label(textfield_frame, text = "New Borrower's Name") # Already created so this is causing issues 
 		bo_name_label.grid(row = 4, column = 0, sticky = "w")
-		bo_address_label = Label(textfield_frame, text = "New Borrower's Address")
+		# bo_address_label = Label(textfield_frame, text = "Borrower's Address") # Already created so this is causing issues
 		bo_address_label.grid(row = 5, column = 0, sticky = "w")
-		bo_phone_label = Label(textfield_frame, text = "New Borrower's Phone Number")
+		# bo_phone_label = Label(textfield_frame, text = "Borrower's Phone Number") # Already created so this is causing issues
 		bo_phone_label.grid(row = 6, column = 0, sticky = "w")
 		
 
@@ -344,6 +345,7 @@ def select_from_dropdown(event):
 	elif clicked.get() == query_options[24]: 	# Add new Book to All Branches (Requirement 3)
 		# Part 3 - Requirement 3 - Add a new book with publisher (you can use a publisher that already exists) 
 		# and author information to all 5 branches with 5 copies for each branch. [5 points]
+		query_select_label.config(text = "Add new Book to All Branches")
 
 		# Textbox Fields Locations
 		b_title_entry.grid(row = 4, column = 1)
@@ -1468,9 +1470,12 @@ def requirement4(query_runner):
 
 	# Check if book_title is ID or title
 	try:
-		# try to convert book_id to an integer
-		book_id = int(book_title)
-		is_book_id = True
+		# try to convert book_id to an integer unless it's 1984
+		if (book_title == "1984"):
+			is_book_id = False
+		else:
+			book_id = int(book_title)
+			is_book_id = True
 	except ValueError:
 		# if it fails, assume it's a title
 		is_book_id = False
@@ -1623,9 +1628,10 @@ def requirement6(query_runner):
 			B.Title as Book_Title,
 			BL.Book_Id as Book_ID,
 			CASE
-				WHEN BL.Returned_Date IS 'NULL' THEN 'Non-Applicable'
+				WHEN BL.Returned_Date IS 'NULL' THEN 
+					'$' || ROUND((JULIANDAY(CURRENT_DATE) - JULIANDAY(BL.Due_Date)) * LB.LateFee, 2)
 				WHEN JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date) > 0 THEN
-				  '$' || ROUND((JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date)) * LB.LateFee, 2)
+					'$' || ROUND((JULIANDAY(BL.Returned_Date) - JULIANDAY(BL.Due_Date)) * LB.LateFee, 2)
 				ELSE 'Non-Applicable'
 			END AS Late_Fee_Ammount
 		FROM BORROWER BOR
@@ -1663,7 +1669,13 @@ def requirement6(query_runner):
 		query += " WHERE " + " AND ".join(conditions)
 
 	# Order by late fee amount
-	query += " ORDER BY Late_Fee_Ammount DESC;"
+	query += """ 
+		ORDER BY 
+			CASE 
+				WHEN Late_Fee_Ammount = 'Non-Applicable' THEN 0
+			END,
+			CAST(SUBSTR(Late_Fee_Ammount, 2) AS FLOAT) DESC; -- gets the substring strarting from index 2 then orders it
+	"""
 	 
 	# Execute the query
 	query_runner.execute(query, params)
@@ -1920,7 +1932,7 @@ def requirement6b(query_runner):
 # General Do Query Creator: Chime Nguyen
 def do_query():
 	# Create a new connection dedicated to the queries
-	query_conn = sqlite3.connect('LMS_2.db') # Edit this to be the right database name
+	query_conn = sqlite3.connect('test.db') # Edit this to be the right database name
 
 	# Remove previous results details
 	for widget in results_frame.grid_slaves():
