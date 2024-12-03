@@ -1117,9 +1117,9 @@ def part3_query3(query_runner):
 # Requirement 1 - Check out a Book
 # Creator: Trung Nguyen & Chime Nguyen
 def requirement1(query_runner, query_conn):
-	# Clear the old results from the frame 
-	for widget in results_frame.grid_slaves():
-		widget.grid_forget() # Removes all widgets from the grid from the last query
+	# # Clear the old results from the frame 
+	# for widget in results_frame.grid_slaves():
+	# 	widget.grid_forget() # Removes all widgets from the grid from the last query
 
 	# Get input values
 	card_no = bl_card_no_entry.get()
@@ -1254,17 +1254,20 @@ def requirement1(query_runner, query_conn):
 	# Create the trigger if it does not exists and have it run after insert
 	# https://www.sqlitetutorial.net/sqlite-trigger/
 	query_runner.execute("""
-					  CREATE TRIGGER IF NOT EXISTS reduce_book_copy_on_branch
-					  AFTER INSERT ON BOOK_LOANS
-					  BEGIN
-					    UPDATE BOOK_COPIES
-						SET No_Of_Copies = No_Of_Copies-1
-					    WHERE Branch_Id = NEW.Branch_Id
-					  	AND Book_Id = NEW.Book_Id;
-					  END""")
-	
+	CREATE TRIGGER IF NOT EXISTS reduce_book_copy_on_branch
+	AFTER INSERT ON BOOK_LOANS
+	BEGIN
+		UPDATE BOOK_COPIES
+		SET No_Of_Copies = No_Of_Copies - 1
+		WHERE Branch_Id = NEW.Branch_Id
+		AND Book_Id = NEW.Book_Id;
+	END;
+	""")
+
+	# Commit the trigger into the database	
 	query_conn.commit()
-	print ("Trigger Created?")
+
+	# Select the entire table from the BOOK_LOANS table where it matches the exact entry details
 	query_runner.execute("""SELECT * FROM BOOK_LOANS WHERE Book_Id = (:bookID)
 					AND Branch_Id = (:branchID) AND Card_No = (:cardNO)""",
 					{
@@ -1273,23 +1276,20 @@ def requirement1(query_runner, query_conn):
 						'cardNO': card_no 
 					})
 	
-	query_runner.execute("DROP TRIGGER reduce_book_copy_on_branch")
-
+	# Store the results from the command above into a variable
 	already_loaned = query_runner.fetchall()
 
-	print(already_loaned)
 
 	# In the case that the book was checked out before by the person, check if they have a loan
 	if already_loaned != None:
-		if already_loaned[5] == 'NULL':
-			# The book is currently being checked out by the person
-			return ("The Borrower Already Has A Loan For This Specific Book In This Branch", 0, 0)
-		else:
-			# The book was previously checked out by the person
-			# While we could update the dates from the table, due to the limited time on the project,
-			# we will state that the borrower has already borrowed the book before.
-			return ("The Borrower Has Already Borrowed This Specific Book From This Branch", 0, 0)
-			
+		# DEBUG: Print the results of the table
+		print(already_loaned)
+		# Parse the data in each possible row
+		for loan in already_loaned:
+			loan_returned_date = str(loan[5])
+			if loan_returned_date == 'NULL':
+				# The book is currently being checked out by the person
+				return ("The Borrower Already Has A Loan For This Specific Book In This Branch", 0, 0)
 	
 	# Do the checkout now that you have book id and branch id
 	query_runner.execute("""
@@ -1297,33 +1297,43 @@ def requirement1(query_runner, query_conn):
 	VALUES (?, ?, ?, CURRENT_DATE, DATE(CURRENT_DATE, '+1 month'), 'NULL')
 	""", (book_id_to_use, branch_id_to_use, card_no))
 
-
-	print ("Inserted New Book Loan?")
+	# DEBUG: Print message that confirms that the new book loan is added
+	print ("Inserted New Book Loan")
+	# Commit the insertion into the database
 	query_conn.commit()
+
+	# Drop the trigger here after the trigger is executed
+	query_runner.execute("DROP TRIGGER reduce_book_copy_on_branch")
 	
 	# Trigger should run automatically if you did after update trigger
-	print ("Trigger Ran?")
+	print ("Trigger Ran")
 	
-	# You will need to perform a select query to show the updated table output of book_copies
+	# Perform a select query to show the updated table output of book_copies
 	query_runner.execute("""SELECT * FROM BOOK_COPIES""")
-	
-	print ("Selected everything?")
+	print ("Selected everything")
 
+	# Store the results from the command above into a variable
 	results = query_runner.fetchall()
 
+	# DEBUG: Print the results from the query above
 	print (results)
 	print ("Printed results")
 
+	# Create a variable that can store multiple strings for each column
 	result_book_id = ''
 	result_branch_id = ''
 	result_no_of_copies = ''
 
-	# Since you need to retrieve the data separately to display them correctly, here is the code you can uncomment
+	# For each part of the data, store them in their respective column
 	for record in results:
+		# Store the 1st part of the data in the book ID results in string representation
 		result_book_id += str(str(record[0]) + "\n")
+		# Store the 2nd part of the data in the branch ID results in string representation
 		result_branch_id += str(str(record[1]) + "\n")
+		# Store the 3rd part of the data in the number of copies results in string representation
 		result_no_of_copies += str(str(record[2]) + "\n")
 		
+	# DEBUG: Print the string arrays
 	print (result_book_id)
 	print ('')
 	print (result_branch_id)
@@ -2150,7 +2160,7 @@ def do_query():
 		(result_book_id, result_branch_id, result_no_of_copies) = requirement1(query_runner, query_conn)
 		if (result_branch_id == 0) or (result_no_of_copies == 0):
 			# Return error message if there was an error
-			results_label.config(text = result_book_id)
+			results_label.config(results_frame, text = result_book_id)
 		else:
 			# Create seperate labels for displaying results separately
 			results0a = Label(results_frame, text = "Book ID", justify = "left")
