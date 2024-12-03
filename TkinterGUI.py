@@ -1139,8 +1139,8 @@ def part3_query3(query_runner):
 			END AS 'DaysLate',
 			BL.Branch_Id,
 			CASE WHEN BL.Late = 1
-				THEN CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER) * LB.LateFee
-				ELSE 0
+				THEN '$' || ROUND(CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER) * LB.LateFee, 2)
+				ELSE 'N/A'
 			END AS 'LateFeeBalance'
 		FROM BOOK_LOANS BL
 		JOIN BORROWER BR ON BL.Card_No = BR.Card_No
@@ -1187,6 +1187,9 @@ def part3_query3(query_runner):
 			# Display each value in the current row
 			for col_index in range(len(current_row)):
 				value = current_row[col_index]
+				# Format Late Fee Balance to display two decimals if it's not 'N/A'
+				if col_index == 9 and value != 'N/A':
+					value = "${:.2f}".format(float(value.replace('$', '')))
 				result_label = Label(results_frame, text=value)
 				result_label.grid(row=row_index + 1, column=col_index)
 	else:
