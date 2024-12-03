@@ -498,7 +498,7 @@ def part2_query1(query_runner):
 
 	# Return if the inputs are not valid
 	if not verified:
-		return invalid_message
+		return (invalid_message,0,0,0)
 
 	# Insert the filled in data into the database after verifying that the data is valid
 	query_runner.execute("INSERT INTO BORROWER (Name, Address, Phone) VALUES (:name, :address, :phone)",
@@ -509,20 +509,27 @@ def part2_query1(query_runner):
 					  })
 	
 	# Find said user with exact details to find thei card number
-	query_runner.execute("""SELECT Card_no FROM BORROWER
-					  WHERE Name = ? AND Address = ? AND Phone = ?""",
-					  (verify_name, verify_address, verify_phone))
-	result_card_no = query_runner.fetchone()[0]
+	query_runner.execute("SELECT * FROM BORROWER;")
+	records = query_runner.fetchall()
+
+	result_card = ''
+	result_name = ''
+	result_address = ''
+	result_phone = ''
+
+	for record in records:
+		result_card += str(str(record[0]) + "\n")
+		result_name += str(record[1] + "\n")
+		result_address += str(record[2] + "\n")
+		result_phone += str(record[3] + "\n")
 
 	# Clear all entries that were used
 	bo_name_entry.delete(0, END)
 	bo_address_entry.delete(0, END)
 	bo_phone_entry.delete(0, END)
-	
-	result = "Inserted " + verify_name + " with Card Number " + str(result_card_no) + "."
 
 	# Return a message that the query was successfully inserted into the table.
-	return result
+	return (result_card, result_name, result_address, result_phone)
 
 # Part 2 - Query 2 Creator: Chime Nguyen
 def part2_query2(query_runner):
@@ -543,7 +550,7 @@ def part2_query2(query_runner):
 
 	# Return if the inputs are not valid
 	if not verified:
-		return invalid_message
+		return (invalid_message,0,0,0)
 	
 	# Insert the filled in data into the database after verifying that the data is valid
 	query_runner.execute("UPDATE BORROWER SET Phone = (:phone) WHERE Name = (:name)",
@@ -553,14 +560,27 @@ def part2_query2(query_runner):
 					  })
 
 	# Return a message that the query was successfully inserted into the table.
-	result = "Successfully updated " + bo_name_entry.get() + "'s phone number to " + bo_phone_entry.get() + "."
+	query_runner.execute("SELECT * FROM BORROWER;")
+	records = query_runner.fetchall()
+
+	result_card = ''
+	result_name = ''
+	result_address = ''
+	result_phone = ''
+
+	for record in records:
+		result_card += str(str(record[0]) + "\n")
+		result_name += str(record[1] + "\n")
+		result_address += str(record[2] + "\n")
+		result_phone += str(record[3] + "\n")
+
 
 	# Clear all entries that were used
 	bo_name_entry.delete(0, END)
 	bo_phone_entry.delete(0, END)
 
 	# Return the result
-	return result
+	return (result_card, result_name, result_address, result_phone)
 
 # Part 2 - Query 3 Creator: Trung Nguyen
 def part2_query3(query_runner):
@@ -570,11 +590,11 @@ def part2_query3(query_runner):
 
 	# Check if the values are valid 
 	if not branch_id_or_name or not num_copies:
-		return "Please fill in all fields."
+		return ("Please fill in all fields.",0,0)
 	try:
 		num_copies = int(num_copies)
 	except ValueError:
-		return "Number of copies must be an integer."
+		return ("Number of copies must be an integer.",0,0)
 	
 	# Check if branch_id_or_name is a number or a string
 	try:
@@ -586,18 +606,30 @@ def part2_query3(query_runner):
 		if branch_id_result:
 			branch_id = branch_id_result[0]
 		else:
-			return "Branch not found."
+			return ("Branch not found.",0,0)
 	else:
 		branch_id = branch_id_or_name
 
 	# Update the BOOK_COPIES table
 	query_runner.execute("UPDATE BOOK_COPIES SET No_Of_Copies = No_Of_Copies + ? WHERE Branch_Id = ?", (num_copies, branch_id))
 	
+	query_runner.execute("SELECT * FROM BOOK_COPIES;")
+	records = query_runner.fetchall()
+
+	result_bookId = ''
+	result_branchId = ''
+	result_copies = ''
+	
+	for record in records:
+		result_bookId += str(str(record[0]) + "\n")
+		result_branchId += str(str(record[1]) + "\n")
+		result_copies += str(str(record[2]) + "\n")
+
 	# Clear the entries
 	bc_branch_id_entry.delete(0, END)
 	bc_no_of_copies_entry.delete(0, END)
 
-	return "Successfully updated book copies."
+	return (result_bookId, result_branchId, result_copies)
 
 # Part 2 - Query 4a Creator: Trung Nguyen
 def part2_query4a(query_runner):
@@ -610,7 +642,7 @@ def part2_query4a(query_runner):
 	if not book_title or not publisher_name or not author_name:
 		results_label.config(text = "Please fill in all fields.")
 		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
+		return (0,0,0)
 	
 	# Insert Publisher if it doesn't exist in the database
 	query_runner.execute("INSERT OR IGNORE INTO PUBLISHER (Publisher_Name) VALUES (?)", (publisher_name,))
@@ -625,15 +657,28 @@ def part2_query4a(query_runner):
 	# Insert Author
 	query_runner.execute("INSERT INTO BOOK_AUTHORS (Book_Id, Author_Name) VALUES (?, ?)", (book_id, author_name))
 
+
+	query_runner.execute("""
+					  SELECT bo.Title, bo.Publisher_name, ba.Author_Name
+					  FROM BOOK bo JOIN BOOK_AUTHORS ba ON bo.Book_Id = ba.Book_Id;
+					  """)
+	records = query_runner.fetchall()
+
+	result_title = ''
+	result_Pname = ''
+	result_Aname = ''
+
+	for record in records:
+		result_title += str(record[0] + "\n")
+		result_Pname += str(record[1] + "\n")
+		result_Aname += str(record[2] + "\n")
+	
 	# Clear the entries
 	b_title_entry.delete(0, END)
 	b_publisher_name_entry.delete(0, END)
 	ba_author_name_entry.delete(0, END)
 
-	results_label.config(text = "Successfully added new book.")
-	results_label.grid(row = 100, column = 0, columnspan = 2)
-
-	return
+	return (result_title, result_Pname, result_Aname)
 
 # Part 2 - Query 4b Creator: Trung Nguyen
 def part2_query4b(query_runner):
@@ -645,19 +690,28 @@ def part2_query4b(query_runner):
 	if not branch_name or not branch_address:
 		results_label.config(text = "Please fill in all fields.")
 		results_label.grid(row = 100, column = 0, columnspan = 2)
-		return
+		return (0,0,0)
 	
 	# Insert new Branch
 	query_runner.execute("INSERT INTO LIBRARY_BRANCH (Branch_Name, Branch_Address) VALUES (?, ?)", (branch_name, branch_address))
 
+	query_runner.execute("SELECT Branch_Id, Branch_Name, Branch_Address FROM LIBRARY_BRANCH;")
+	records = query_runner.fetchall()
+
+	result_branch_id = ''
+	result_branch_name = ''
+	result_branch_address = ''
+
+	for record in records:
+		result_branch_id += str(str(record[0]) + "\n")
+		result_branch_name += str(record[1] + "\n")
+		result_branch_address += str(record[2] + "\n")
+		
 	# Clear the entries
 	lb_branch_name_entry.delete(0, END)
 	lb_branch_address_entry.delete(0, END)
 
-	results_label.config(text = "Successfully added new branch.")
-	results_label.grid(row = 100, column = 0, columnspan = 2)
-
-	return
+	return (result_branch_id, result_branch_name, result_branch_address)
 
 # Part 2 - Query 5 Creator: Trung Nguyen
 def part2_query5(query_runner):
@@ -889,6 +943,8 @@ def part2_query9(query_runner):
 		result_Author += str(record[2] + "\n")
 		result_Date_out += str(record[3] + "\n")
 
+	bo_name_entry.delete(0, END)
+
 	return (result_borrower_name, result_book_title, result_Author, result_Date_out)
 
 # Part 2 - Query 10 Creator: Ivan
@@ -921,6 +977,8 @@ def part2_query10(query_runner):
 		result_borrower_name += str(record[0] + "\n")
 		result_borrower_address += str(record[1] + "\n")
 		result_library_branch_name += str(record[2] + "\n")
+
+	lb_branch_name_entry.delete(0, END)
 
 	return (result_borrower_name, result_borrower_address, result_library_branch_name)
 
@@ -969,6 +1027,7 @@ def part3_query1():
             result_due_date += str((record[4]) + "\n")
             result_returned_date += str((record[5]) + "\n")
             result_late += str(str(record[6]) + "\n")
+
 
         return (result_book_id, result_branch_id, result_card_no, result_date_out, result_due_date, result_returned_date, result_late)
 	
@@ -1025,6 +1084,9 @@ def part3_query2():
 			result_branch_name += str(record[1] + "\n")
 			result_branch_address += str(record[2] + "\n")
 			result_latefee += str(str(record[3]) + "\n")
+
+		lb_branch_latefee_entry.delete(0, END)
+		lb_branch_name_entry.delete(0, END)
 
 		return (result_branch_id, result_branch_name, result_branch_address, result_latefee)
 	
@@ -1954,28 +2016,127 @@ def do_query():
 	# Create a frame for the results based on query
 	if clicked.get() == query_options[2]:
 		# Do computations for Part 2 - Query 1
-		results_text = part2_query1(query_runner)
-		results_label.config(text = results_text)
+		(result_card, result_name, result_address, result_phone) = part2_query1(query_runner)
+		
+		if(result_name != 0):
+			results0a = Label(results_frame, text = "Card No", justify = "left")
+			results0b = Label(results_frame, text = "Borrower Name", justify = "left")
+			results0c = Label(results_frame, text = "Borrower Address", justify = "left")
+			results0d = Label(results_frame, text = "Borrower Phone", justify = "left")
+
+			results1 = Label(results_frame, text = result_card, justify = "left")
+			results2 = Label(results_frame, text = result_name, justify = "left")
+			results3 = Label(results_frame, text = result_address, justify = "left")
+			results4 = Label(results_frame, text = result_phone, justify = "left")
+
+
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
+			results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 22, sticky = "w")
+			results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 22, sticky = "w")
+			results0d.grid(row = RESULTS_ROW-1, column = 3, padx = 22, sticky = "w")
+
+			results1.grid(row = RESULTS_ROW, column = 0, padx = 22, sticky = "w")
+			results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "w")
+			results3.grid(row = RESULTS_ROW, column = 2, padx = 22, sticky = "w")
+			results4.grid(row = RESULTS_ROW, column = 3, padx = 22, sticky = "w")
+		else:
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
 
 	elif clicked.get() == query_options[3]:
 		# Do computations for Part 2 - Query 2
-		results_text = part2_query2(query_runner)
-		results_label.config(text = results_text)
+		(result_card, result_name, result_address, result_phone) = part2_query2(query_runner)
+		
+		if(result_name != 0):
+			results0a = Label(results_frame, text = "Card No", justify = "left")
+			results0b = Label(results_frame, text = "Borrower Name", justify = "left")
+			results0c = Label(results_frame, text = "Borrower Address", justify = "left")
+			results0d = Label(results_frame, text = "Borrower Phone", justify = "left")
+
+			results1 = Label(results_frame, text = result_card, justify = "left")
+			results2 = Label(results_frame, text = result_name, justify = "left")
+			results3 = Label(results_frame, text = result_address, justify = "left")
+			results4 = Label(results_frame, text = result_phone, justify = "left")
+
+
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
+			results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 22, sticky = "w")
+			results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 22, sticky = "w")
+			results0d.grid(row = RESULTS_ROW-1, column = 3, padx = 22, sticky = "w")
+
+			results1.grid(row = RESULTS_ROW, column = 0, padx = 22, sticky = "w")
+			results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "w")
+			results3.grid(row = RESULTS_ROW, column = 2, padx = 22, sticky = "w")
+			results4.grid(row = RESULTS_ROW, column = 3, padx = 22, sticky = "w")
+		else:
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
 
 	elif clicked.get() == query_options[4]:
 		# Do computations for Part 2 - Query 3
-		results_text = part2_query3(query_runner)
-		results_label.config(text = results_text)
+		(result_bookId, result_branchId, result_copies) = part2_query3(query_runner)
+		if(result_branchId != 0):
+			results0a = Label(results_frame, text = "Book Id", justify = "left")
+			results0b = Label(results_frame, text = "Branch Id", justify = "left")
+			results0c = Label(results_frame, text = "No of Copies", justify = "left")
+
+			results1 = Label(results_frame, text = result_bookId, justify = "left")
+			results2 = Label(results_frame, text = result_branchId, justify = "left")
+			results3 = Label(results_frame, text = result_copies, justify = "left")
+
+
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
+			results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 22, sticky = "w")
+			results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 22, sticky = "w")
+
+			results1.grid(row = RESULTS_ROW, column = 0, padx = 22, sticky = "w")
+			results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "w")
+			results3.grid(row = RESULTS_ROW, column = 2, padx = 22, sticky = "w")
+		else:
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
 
 	elif clicked.get() == query_options[5]:
 		# Do computations for Part 2 - Query 4a
-		results_text = part2_query4a(query_runner)
-		results_label.config(text = results_text)
+		(result_title, result_Pname, result_Aname) = part2_query4a(query_runner)
+		if(result_Pname != 0):
+			results0a = Label(results_frame, text = "Title", justify = "left")
+			results0b = Label(results_frame, text = "Publisher Name", justify = "left")
+			results0c = Label(results_frame, text = "Author Name", justify = "left")
+
+			results1 = Label(results_frame, text = result_title, justify = "left")
+			results2 = Label(results_frame, text = result_Pname, justify = "left")
+			results3 = Label(results_frame, text = result_Aname, justify = "left")
+
+
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
+			results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 22, sticky = "w")
+			results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 22, sticky = "w")
+
+			results1.grid(row = RESULTS_ROW, column = 0, padx = 22, sticky = "w")
+			results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "w")
+			results3.grid(row = RESULTS_ROW, column = 2, padx = 22, sticky = "w")
+		else:
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
 
 	elif clicked.get() == query_options[6]:
 		# Do computations for Part 2 - Query 4b
-		results_text = part2_query4b(query_runner)
-		results_label.config(text = results_text)
+		(result_branch_id, result_branch_name, result_branch_address) = part2_query4b(query_runner)
+		if(result_branch_name != 0):
+			results0a = Label(results_frame, text = "Branch Id", justify = "left")
+			results0b = Label(results_frame, text = "Branch Name", justify = "left")
+			results0c = Label(results_frame, text = "Branch Address", justify = "left")
+
+			results1 = Label(results_frame, text = result_branch_id, justify = "left")
+			results2 = Label(results_frame, text = result_branch_name, justify = "left")
+			results3 = Label(results_frame, text = result_branch_address, justify = "left")
+
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 2)
+			results0b.grid(row = RESULTS_ROW-1, column = 1, padx = 2)
+			results0c.grid(row = RESULTS_ROW-1, column = 2, padx = 2)
+
+			results1.grid(row = RESULTS_ROW, column = 0, padx = 2, sticky = "w")
+			results2.grid(row = RESULTS_ROW, column = 1, padx = 2, sticky = "w")
+			results3.grid(row = RESULTS_ROW, column = 2, padx = 2, sticky = "w")
+		else:
+			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
 
 	elif clicked.get() == query_options[7]:
 		# Do computations for Part 2 - Query 5
