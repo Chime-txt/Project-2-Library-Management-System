@@ -69,24 +69,23 @@ query_options = [
 	"Part 2 - Query 8",					#      ...     [10]
 	"Part 2 - Query 9",					#      ...     [11]
 	"Part 2 - Query 10",				#      ...     [12]
-	"",									#      ...     [13]
-	"======== Part 3 Query ========",	#      ...     [14]
-	"Part 3 - Query 1",					# query_options[15]
-	"Part 3 - Query 2",					#      ...     [16]
-	"Part 3 - Query 3a",				#      ...     [17]
-	"Part 3 - Query 3b",				#      ...     [18]
+	"======== Part 3 Query ========",	#      ...     [13]
+	"Part 3 - Query 1",					# query_options[14]
+	"Part 3 - Query 2",					#      ...     [15]
+	"Part 3 - Query 3a",				#      ...     [16]
+	"Part 3 - Query 3b",				#      ...     [17]
 	# RESETING DATABASE is purely optional and for quick testing purposes
-	"======= RESET DATABASE =======",	#      ...     [19]
-	"Reset Database",					# query_options[20]
-	"======= Testing stuff ========",	# query_options[21]
-	"Check out a Book",					# query_options[22]
-	"Sign up a new Borrower",			# query_options[23]
-	"Add new Book to All Branches",		# query_options[24]
-	"Check copies Loaned",				# query_options[25]
-	"Check for Late Returns",			# query_options[26]
-	"Generalized Info of Book Loans",	# query_options[27]
-	"View Book Loan via Borrower",		# query_options[28]
-	"View Book Loan via Book"			# query_options[29]
+	# "======= RESET DATABASE =======",	#      ...     [18]
+	# "Reset Database",					# query_options[19]
+	"======= Requirements ========",	# query_options[18]
+	"Check out a Book",					# query_options[19]
+	"Sign up a new Borrower",			# query_options[20]
+	"Add new Book to All Branches",		# query_options[21]
+	"Check copies Loaned",				# query_options[22]
+	"Check for Late Returns",			# query_options[23]
+	"Generalized Info of Book Loans",	# query_options[24]
+	"View Book Loan via Borrower",		# query_options[25]
+	"View Book Loan via Book"			# query_options[26]
 
 ]
 # END ==================================== Dropdown Options ==================================== END
@@ -260,7 +259,7 @@ def select_from_dropdown(event):
 		lb_branch_name_label.grid(row = 4, column = 0, sticky = "w")
 		
 		return
-	elif clicked.get() == query_options[15]:
+	elif clicked.get() == query_options[14]:
 		# Part 3 - Query 1 - Add Late Attribute In Book Loan Table
 		query_select_label.config(text = "Add A Value For Late Books To Book Loan Table")
 
@@ -269,7 +268,7 @@ def select_from_dropdown(event):
 		# Textbox Labels Location
 		
 		return
-	elif clicked.get() == query_options[16]:
+	elif clicked.get() == query_options[15]:
 		# Part 3 - Query 2 - Add Late Fee Attribute In Library Branch Table With Set Fees
 		query_select_label.config(text = "Add A Late Fee To The Library Branch Table With Determined Fees")
 
@@ -283,18 +282,8 @@ def select_from_dropdown(event):
 		lb_branch_latefee_label.grid(row =5, column = 0, sticky = "w")
 
 		return
-	elif clicked.get() == query_options[18]:	# Part 3 - Query 3b
-		# Part 3 - Query 3 - View All Details About A Book Loan
-		query_select_label.config(text = "View All Details About A Book Loan")
-
-		# Textbox Fields Locations
-		b_title_entry.grid(row = 4, column = 1)
-
-		# Textbox Labels Location
-		b_title_label.grid(row = 4, column = 0, sticky = "w")
-
-	elif clicked.get() == query_options[17]:	# Part 3 - Query 3a
-		# Part 3 - Query 3b - Create view and return all records
+	elif clicked.get() == query_options[16]:	# Part 3 - Query 3a
+		# Part 3 - Query 3a - Create view and return all records
 		query_select_label.config(text = "Create A View And Return All Records")
 
 		# Textbox Fields Locations
@@ -303,8 +292,20 @@ def select_from_dropdown(event):
 
 		
 		return
-	#########################TESTING REQUIREMENTS STUFF ####################################
-	elif clicked.get() == query_options[22]: 	# Check out a Book (Requirement 1)
+	elif clicked.get() == query_options[17]:	# Part 3 - Query 3b
+		# Part 3 - Query 3b - View All Details About A Book Loan
+		query_select_label.config(text = "View All Details About A Book Loan")
+
+		# Textbox Fields Locations
+		b_title_entry.grid(row = 4, column = 1)
+
+		# Textbox Labels Location
+		b_title_label.grid(row = 4, column = 0, sticky = "w")
+
+		return
+	
+	########################### REQUIREMENTS STUFF ####################################
+	elif clicked.get() == query_options[19]: 	# Check out a Book (Requirement 1)
 		# Part 3 - Requirement 1 - Check out a book, add to Book_Loan, 
 		# the number of copies needs to be updated via trigger in Book_copies table
 		# Show output of updated Book_Copies table [10 points]
@@ -324,7 +325,7 @@ def select_from_dropdown(event):
 
 
 		return
-	elif clicked.get() == query_options[23]: 	# Sign up a new Borrower (Requirement 2)
+	elif clicked.get() == query_options[20]: 	# Sign up a new Borrower (Requirement 2)
 		# Part 3 - Requirement 2 - Add information about new Borrower. Do not provide CardNo in query.
 		# Output the card number as if you are giving a new library card. [3 points]
 		query_select_label.config(text = "Sign up a new Borrower")
@@ -344,7 +345,7 @@ def select_from_dropdown(event):
 		
 
 		return
-	elif clicked.get() == query_options[24]: 	# Add new Book to All Branches (Requirement 3)
+	elif clicked.get() == query_options[21]: 	# Add new Book to All Branches (Requirement 3)
 		# Part 3 - Requirement 3 - Add a new book with publisher (you can use a publisher that already exists) 
 		# and author information to all 5 branches with 5 copies for each branch. [5 points]
 		query_select_label.config(text = "Add new Book to All Branches")
@@ -360,7 +361,7 @@ def select_from_dropdown(event):
 		b_publisher_name_label.grid(row = 6, column = 0, sticky = "w")
 
 		return
-	elif clicked.get() == query_options[25]: 	# Check copies Loaned (Requirement 4)
+	elif clicked.get() == query_options[22]: 	# Check copies Loaned (Requirement 4)
 		# Part 3 - Requirement 4 - Given a book title list the number of copies loaned out per branch. [5 points]
 		query_select_label.config(text = "Check copies Loaned")
 
@@ -371,7 +372,7 @@ def select_from_dropdown(event):
 		b_title_label.grid(row = 4, column = 0, sticky = "w")
 
 		return
-	elif clicked.get() == query_options[26]: 	# Check for Late Returns (Requirement 5)
+	elif clicked.get() == query_options[23]: 	# Check for Late Returns (Requirement 5)
 		# Part 3 - Requirement 5 - Given any due date range list the Book_loans that were returned late 
 		# and how many days they were late [8 points]
 		query_select_label.config(text = "Check for Late Returns")
@@ -388,7 +389,7 @@ def select_from_dropdown(event):
 		bl_date_out_end_label.grid(row = 5, column = 0, sticky = "w")
 
 		return
-	elif clicked.get() == query_options[27]: 	# View Info on a Book Loan (Requirement 6)
+	elif clicked.get() == query_options[24]: 	# View Info on a Book Loan (Requirement 6)
 		# Part 3 - Requirement 6 - return view's results by applying criteria
 		# List for every borrower the ID, name, and if there is any lateFee balance.
 		# The user has the right to search either by a borrower ID, name, part of the name or run query with no filters/criteria.
@@ -419,7 +420,7 @@ def select_from_dropdown(event):
 
 		return
 	
-	elif clicked.get() == query_options[28]: 	# View Book Loan via Borrower (Requirement 6a)
+	elif clicked.get() == query_options[25]: 	# View Book Loan via Borrower (Requirement 6a)
 		# List for every borrower the ID, name, and if there is any lateFee balance.
 		# The user has the right to search either by a borrower ID, name, part of the name or run query with no filters/criteria.
 		# Amount needs to be in US dollars. For borrrowers with zero(0) or NULL balanace, you need to return zero dollars ($0.00)
@@ -438,7 +439,7 @@ def select_from_dropdown(event):
 	
 		return
 	
-	elif clicked.get() == query_options[29]: 	# View Book Loan via Book (Requirement 6b)
+	elif clicked.get() == query_options[26]: 	# View Book Loan via Book (Requirement 6b)
 		# List book information in the view. user must search with borrowerID and any of the following search items:
 		# book id, book title, part of book title, or run query with no filters/criteria
 		# The late fee amount needs to be in US dollars. The late fee price amount needs to have two decimals as well as $ sign
@@ -2353,7 +2354,7 @@ def do_query():
 		results2.grid(row = RESULTS_ROW, column = 1, padx = 2, sticky = "w")
 		results3.grid(row = RESULTS_ROW, column = 2, padx = 2, sticky = "w")
 
-	elif clicked.get() == query_options[15]:
+	elif clicked.get() == query_options[14]:
 		# Do computations for Part 3 - Query 1
 		(result_book_id, result_branch_id, result_card_no, result_date_out, result_due_date, result_returned_date, result_late) = part3_query1()
 		
@@ -2392,7 +2393,7 @@ def do_query():
 		
 	
 
-	elif clicked.get() == query_options[16]:
+	elif clicked.get() == query_options[15]:
 		# Do computations for Part 3 - Query 2
 		(result_branch_id, result_branch_name, result_branch_address, result_latefee) = part3_query2()
 
@@ -2417,19 +2418,19 @@ def do_query():
 		results4.grid(row = RESULTS_ROW, column = 3, padx = 2, sticky = "w")
 
 
-	elif clicked.get() == query_options[18]:
+	elif clicked.get() == query_options[16]:
 		# Do computations for Part 3 - Query 3
-		results_text = part3_query3b(query_runner)
+		results_text = part3_query3a(query_runner)
 		results_label.config(text = results_text)
 
 	elif clicked.get() == query_options[17]:
 		# Do computations for Part 3 - Query 3b
-		results_text = part3_query3a(query_runner)
+		results_text = part3_query3b(query_runner)
 		results_label.config(text = results_text)
 
 #	==================================== TESTING REQUIREMENTS FUNCTIONS =================================
 
-	elif clicked.get() == query_options[22]:
+	elif clicked.get() == query_options[19]:
 		# Do computations for Requirement 1
 		(result_book_id, result_branch_id, result_no_of_copies) = requirement1(query_runner, query_conn)
 		if (result_branch_id == 0) or (result_no_of_copies == 0):
@@ -2454,7 +2455,7 @@ def do_query():
 			results2.grid(row = RESULTS_ROW, column = 1, padx = 22, sticky = "nsew")
 			results3.grid(row = RESULTS_ROW, column = 2, padx = 22, sticky = "nsew")
 
-	elif clicked.get() == query_options[23]:
+	elif clicked.get() == query_options[20]:
 		# Do computations for Requirement 2
 		(result_card, result_name, result_address, result_phone) = requirement2(query_runner, query_conn)
 		
@@ -2482,32 +2483,32 @@ def do_query():
 		else:
 			results0a.grid(row = RESULTS_ROW-1, column = 0, padx = 22, sticky = "w")
 
-	elif clicked.get() == query_options[24]:
+	elif clicked.get() == query_options[21]:
 		# Do computations for Requirement 3
 		results_text = requirement3(query_runner)
 		results_label.config(text = results_text)
 
-	elif clicked.get() == query_options[25]:
+	elif clicked.get() == query_options[22]:
 		# Do computations for Requirement 4
 		results_text = requirement4(query_runner)
 		results_label.config(text = results_text)
 
-	elif clicked.get() == query_options[26]:
+	elif clicked.get() == query_options[23]:
 		# Do computations for Requirement 5
 		results_text = requirement5(query_runner)
 		results_label.config(text = results_text)
 
-	elif clicked.get() == query_options[27]:
+	elif clicked.get() == query_options[24]:
 		# Do computations for GENERALIZED Requirement 6
 		results_text = requirement6(query_runner)
 		results_label.config(text = results_text)
 
-	elif clicked.get() == query_options[28]:
+	elif clicked.get() == query_options[25]:
 		# Do computations for Requirement 6a
 		results_text = requirement6a(query_runner)
 		results_label.config(text = results_text)
 	
-	elif clicked.get() == query_options[29]:
+	elif clicked.get() == query_options[26]:
 		# Do computations for Requirement 6b
 		results_text = requirement6b(query_runner)
 		results_label.config(text = results_text)
