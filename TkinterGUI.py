@@ -39,9 +39,9 @@ import random
 # BEGIN ================================== Creating Windows ================================== BEGIN
 root = Tk()
 root.title('Library Management System')
-root.geometry("800x800")
-root.minsize(800, 800)
-root.maxsize(800, 100)
+root.geometry("900x800")
+root.minsize(1000, 800)
+root.maxsize(1000, 1200)
 # END ==================================== Creating Windows ==================================== END
 
 
@@ -79,9 +79,9 @@ query_options = [
 	"======== Part 3 Query ========",	#      ...     [14]
 	"Part 3 - Query 1",					# query_options[15]
 	"Part 3 - Query 2",					#      ...     [16]
-	"Part 3 - Query 3",					#      ...     [17]
+	"Part 3 - Query 3a",				#      ...     [17]
+	"Part 3 - Query 3b",				#      ...     [18]
 	# RESETING DATABASE is purely optional and for quick testing purposes
-	"",									#      ...     [18]
 	"======= RESET DATABASE =======",	#      ...     [19]
 	"Reset Database",					# query_options[20]
 	"======= Testing stuff ========",	# query_options[21]
@@ -289,7 +289,7 @@ def select_from_dropdown(event):
 		lb_branch_latefee_label.grid(row =5, column = 0, sticky = "w")
 
 		return
-	elif clicked.get() == query_options[17]:	# Part 3 - Query 3
+	elif clicked.get() == query_options[18]:	# Part 3 - Query 3b
 		# Part 3 - Query 3 - View All Details About A Book Loan
 		query_select_label.config(text = "View All Details About A Book Loan")
 
@@ -298,7 +298,15 @@ def select_from_dropdown(event):
 
 		# Textbox Labels Location
 		b_title_label.grid(row = 4, column = 0, sticky = "w")
-		
+
+	elif clicked.get() == query_options[17]:	# Part 3 - Query 3a
+		# Part 3 - Query 3b - Create view and return all records
+		query_select_label.config(text = "Create A View And Return All Records")
+
+		# Textbox Fields Locations
+
+		# Textbox Labels Location
+
 		
 		return
 	#########################TESTING REQUIREMENTS STUFF ####################################
@@ -1118,8 +1126,8 @@ def part3_query2():
 	finally:
 		query_conn.close()
 
-# Part 3 - Query 3 Creator: Trung Nguyen
-def part3_query3(query_runner):
+# Part 3 - Query 3b Creator: Trung Nguyen
+def part3_query3b(query_runner):
 	# Drop the view if it exists already
 	query_runner.execute("DROP VIEW IF EXISTS vBookLoanInfo;")
 
@@ -1139,7 +1147,7 @@ def part3_query3(query_runner):
 			END AS 'DaysLate',
 			BL.Branch_Id,
 			CASE WHEN BL.Late = 1
-				THEN CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER) * LB.LateFee
+				THEN '$' || ROUND(CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER) * LB.LateFee, 2)
 				ELSE 0
 			END AS 'LateFeeBalance'
 		FROM BOOK_LOANS BL
@@ -1187,6 +1195,9 @@ def part3_query3(query_runner):
 			# Display each value in the current row
 			for col_index in range(len(current_row)):
 				value = current_row[col_index]
+				# Format Late Fee Balance to display two decimals if it's not '0'
+				if col_index == 9 and value != 0:
+					value = "${:.2f}".format(float(value.replace('$', '')))
 				result_label = Label(results_frame, text=value)
 				result_label.grid(row=row_index + 1, column=col_index)
 	else:
@@ -1200,6 +1211,88 @@ def part3_query3(query_runner):
 
 
 	return
+
+# Part 3 - Query 3a Creator: Trung Nguyen
+def part3_query3a(query_runner):
+	query_runner.execute("DROP VIEW IF EXISTS vBookLoanInfo;")
+
+	query_runner.execute("""
+		CREATE VIEW vBookLoanInfo AS
+		SELECT
+			BL.Card_No,
+			BR.Name AS 'Borrower Name',
+			BL.Date_Out,
+			BL.Due_Date,
+			BL.Returned_date,		  
+			CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Date_Out)) AS INTEGER) AS 'TotalDays',
+			B.Title AS 'Book Title',
+			CASE WHEN BL.Late = 1
+				THEN CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER)
+				ELSE 0
+			END AS 'DaysLate',
+			BL.Branch_Id,
+			CASE WHEN BL.Late = 1
+				THEN '$' || ROUND(CAST((JULIANDAY(BL.Returned_date) - JULIANDAY(BL.Due_Date)) AS INTEGER) * LB.LateFee, 2)
+				ELSE 0
+			END AS 'LateFeeBalance'
+		FROM BOOK_LOANS BL
+		JOIN BORROWER BR ON BL.Card_No = BR.Card_No
+		JOIN BOOK B ON BL.Book_Id = B.Book_Id
+		JOIN LIBRARY_BRANCH LB ON BL.Branch_Id = LB.Branch_Id;
+		""")
+	
+	# Get the results
+	query_runner.execute("SELECT * FROM vBookLoanInfo;")
+	results = query_runner.fetchall()
+
+	# Clear the old results from the frame
+	for widget in results_frame.grid_slaves():
+		widget.grid_forget() # Removes all widgets from the grid from the last query
+
+	# Success message for creating the view
+	# make it centered 
+	success_message = f"Successfully created view vBookLoanInfo.\n"
+	success_label = Label(results_frame, text=success_message)
+	success_label.grid(row=0, column=0, columnspan=10, sticky ="nsew")
+
+	# Display the results
+	if results:
+		# Define headers for the table
+		headers = ["Card No", 
+			"Borrower Name", 
+			"Date Out", 
+			"Due Date", 
+			"Returned Date", 
+			"Total Days", 
+			"Book Title", 
+			"Days Late", 
+			"Branch Id", 
+			"Late Fee Balance"]
+
+		# Display headers in the first row
+		# There's 10 columns from the headers
+		for col in range(len(headers)):
+			header_label = Label(results_frame, text=headers[col])
+			header_label.grid(row=1, column=col)
+
+		# Display each row of results
+		for row_index in range(len(results)):
+			# Get the current row data
+			current_row = results[row_index]
+
+			# Display each value in the current row
+			for col_index in range(len(current_row)):
+				value = current_row[col_index]
+				# Format Late Fee Balance to display two decimals if it's not '0'
+				if col_index == 9 and value != 0:
+					value = "${:.2f}".format(float(value.replace('$', '')))
+				result_label = Label(results_frame, text=value)
+				result_label.grid(row=row_index + 2, column=col_index)
+
+
+	return
+
+
 # ==============================TESTING REQUIREMENTS FUNCTIONS ================================= 
 # Requirement 1 - Check out a Book
 # Creator: Trung Nguyen & Chime Nguyen
@@ -2545,9 +2638,14 @@ def do_query():
 		results4.grid(row = RESULTS_ROW, column = 3, padx = 2, sticky = "w")
 
 
-	elif clicked.get() == query_options[17]:
+	elif clicked.get() == query_options[18]:
 		# Do computations for Part 3 - Query 3
-		results_text = part3_query3(query_runner)
+		results_text = part3_query3b(query_runner)
+		results_label.config(text = results_text)
+
+	elif clicked.get() == query_options[17]:
+		# Do computations for Part 3 - Query 3b
+		results_text = part3_query3a(query_runner)
 		results_label.config(text = results_text)
 
 #	==================================== TESTING REQUIREMENTS FUNCTIONS =================================
