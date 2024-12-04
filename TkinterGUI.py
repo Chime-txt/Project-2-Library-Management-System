@@ -74,9 +74,6 @@ query_options = [
 	"Part 3 - Query 2",					#      ...     [15]
 	"Part 3 - Query 3a",				#      ...     [16]
 	"Part 3 - Query 3b",				#      ...     [17]
-	# RESETING DATABASE is purely optional and for quick testing purposes
-	# "======= RESET DATABASE =======",	#      ...     [18]
-	# "Reset Database",					# query_options[19]
 	"======= Requirements ========",	# query_options[18]
 	"Check out a Book",					# query_options[19]
 	"Sign up a new Borrower",			# query_options[20]
